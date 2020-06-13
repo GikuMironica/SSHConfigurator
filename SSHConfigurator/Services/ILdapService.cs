@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SSHConfigurator.Services
 {
-    public interface ILdapSerivce
+    public interface ILdapService
     {
         ICollection<THUMember> GetUsersInGroup(string groupName);
 

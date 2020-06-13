@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using Novell.Directory.Ldap;
+using SSHConfigurator.Extensions;
 using SSHConfigurator.Models;
 using SSHConfigurator.Options;
 using System;
@@ -10,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SSHConfigurator.Services
 {
-    public class LdapService : ILdapSerivce
+    public class LdapService : ILdapService
     {
         private readonly LdapSettings _ldapSettings;
 
@@ -71,7 +72,7 @@ namespace SSHConfigurator.Services
                         continue;
                     }
 
-                    user = this.CreateUserFromAttributes(this._searchBase, searchResultMessage.Entry.getAttributeSet());
+                    user = this.CreateUserFromAttributes(this._ldapSettings.SearchBase, searchResultMessage.Entry.getAttributeSet());
                 }
             }
 
@@ -89,13 +90,13 @@ namespace SSHConfigurator.Services
 
             if (groups == null || !groups.Any())
             {
-                users.AddRange(this.GetChildren<LdapUser>(this._searchBase));
+                users.AddRange(this.GetChildren<THUMember>(this._ldapSettings.SearchBase));
             }
             else
             {
                 foreach (var group in groups)
                 {
-                    users.AddRange(this.GetChildren<LdapUser>(this._searchBase, @group.DistinguishedName));
+                    users.AddRange(this.GetChildren<THUMember>(this._ldapSettings.SearchBase, @group.DistinguishedName));
                 }
             }
 
