@@ -23,14 +23,7 @@ namespace SSHConfigurator.Installers
                     .Build();
                 options.Filters.Add(new AuthorizeFilter(policy));
             });
-
-            services.AddDbContext<DataContext>();
-
-            services.AddIdentity<THUMember, IdentityRole>(options =>
-            {
-            })
-            .AddEntityFrameworkStores<DataContext>()
-            .AddDefaultTokenProviders();
+                        
         }
     }
 }
