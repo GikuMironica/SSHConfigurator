@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SSHConfigurator.Extensions
 {
-    public class CollectionExtensions
+    public static class CollectionExtensions
     {
         public static void AddRange<T>(this ICollection<T> source, IEnumerable<T> newValues)
         {
