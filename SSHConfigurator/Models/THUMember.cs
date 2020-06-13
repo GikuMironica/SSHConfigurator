@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace SSHConfigurator.Models
 {
-    public class THUMember : IdentityUser
+    public class THUMember : IdentityUser, ILdapEntry
     {        
         public Int64 LifetimeEnd { get; set; }
 

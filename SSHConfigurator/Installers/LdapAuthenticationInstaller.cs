@@ -15,7 +15,6 @@ namespace SSHConfigurator.Installers
     {
         public void InstallServices(IServiceCollection services, IConfiguration configuration)
         {
-
             services.Configure<LdapSettings>(configuration.GetSection("LdapSettings"));
 
             services.AddDbContext<DataContext>();
