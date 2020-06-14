@@ -16,8 +16,9 @@ namespace SSHConfigurator.Installers
     {
         public void InstallServices(IServiceCollection services, IConfiguration configuration)
         {
-            services.Configure<LdapSettings>(configuration.GetSection("LdapSettings"));
 
+            // LDAP-Authentication configurations
+            services.Configure<LdapSettings>(configuration.GetSection("LdapSettings"));
             services.AddDbContext<DataContext>();
             services.AddIdentity<THUMember, IdentityRole>()
             .AddUserManager<LdapUserManager>()

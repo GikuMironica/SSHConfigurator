@@ -13,7 +13,7 @@ namespace SSHConfigurator.Identity
 {
     public class LdapSignInManager : SignInManager<THUMember>
     {
-        public LdapSignInManager(LdapUserManager ldapUserManager, HttpContextAccessor contextAccessor, IUserClaimsPrincipalFactory<THUMember> claimsFactory,
+        public LdapSignInManager(LdapUserManager ldapUserManager, IHttpContextAccessor contextAccessor, IUserClaimsPrincipalFactory<THUMember> claimsFactory,
             IOptions<IdentityOptions> optionsAccessor, ILogger<LdapSignInManager> logger, IAuthenticationSchemeProvider schemes, IUserConfirmation<THUMember> confirmation) 
             : base(ldapUserManager, contextAccessor, claimsFactory, optionsAccessor, logger, schemes, confirmation)
         {
