@@ -27,6 +27,18 @@ namespace SSHConfigurator.Services
             this._ldapSettings = ldapSettings.Value;
         }
 
+        private ILdapConnection GetConnection()
+        {
+            var ldapConnection = new LdapConnection() { SecureSocketLayer = this._ldapSettings.UseSSL };
+
+            // Create a socket connection to the server
+            ldapConnection.Connect(this._ldapSettings.ServerName, this._ldapSettings.ServerPort);
+            ldapConnection.Bind(this._ldapSettings.Credentials.DomainUserName, this._ldapSettings.Credentials.Password);
+
+            return ldapConnection;
+        }
+
+
         public bool Authenticate(string distinguishedName, string password)
         {
             using (var ldapConnection = new LdapConnection() { SecureSocketLayer = true })
@@ -148,17 +160,7 @@ namespace SSHConfigurator.Services
             return groups;
         }
 
-        private ILdapConnection GetConnection()
-        {
-            var ldapConnection = new LdapConnection() { SecureSocketLayer = this._ldapSettings.UseSSL };
-
-            // Create a socket connection to the server
-            ldapConnection.Connect(this._ldapSettings.ServerName, this._ldapSettings.ServerPort);
-            ldapConnection.Bind(this._ldapSettings.Credentials.DomainUserName, this._ldapSettings.Credentials.Password);
-
-            return ldapConnection;
-        }
-
+        
         private THUMember CreateUserFromAttributes(string distinguishedName, LdapAttributeSet attributeSet)
         {
             var ldapUser = new THUMember
@@ -246,7 +248,6 @@ namespace SSHConfigurator.Services
                     ;
                 }
             }
-
             return allChildren;
         }
 

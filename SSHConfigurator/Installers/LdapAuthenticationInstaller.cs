@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SSHConfigurator.Data;
+using SSHConfigurator.Identity;
 using SSHConfigurator.Models;
 using SSHConfigurator.Options;
 using System;
@@ -18,9 +19,9 @@ namespace SSHConfigurator.Installers
             services.Configure<LdapSettings>(configuration.GetSection("LdapSettings"));
 
             services.AddDbContext<DataContext>();
-            services.AddIdentity<THUMember, IdentityRole>(options =>
-            {
-            })
+            services.AddIdentity<THUMember, IdentityRole>()
+            .AddUserManager<LdapUserManager>()
+            .AddSignInManager<LdapSignInManager>()
             .AddEntityFrameworkStores<DataContext>()
             .AddDefaultTokenProviders();
         }
