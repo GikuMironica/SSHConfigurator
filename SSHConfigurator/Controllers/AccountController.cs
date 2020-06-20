@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using SSHConfigurator.Identity;
 using SSHConfigurator.Models;
 using SSHConfigurator.ViewModels;
 using System;
@@ -13,18 +15,20 @@ namespace SSHConfigurator.Controllers
     [AllowAnonymous]
     public class AccountController : Controller
     {
-        private readonly UserManager<THUMember> userManager;
-        private readonly SignInManager<THUMember> signInManager;
+        private readonly LdapUserManager userManager;
+        private readonly LdapSignInManager signInManager;
 
-        public AccountController(UserManager<THUMember> userManager, SignInManager<THUMember> signInManager)
+        public AccountController(LdapUserManager userManager, LdapSignInManager signInManager)
         {
             this.userManager = userManager;
             this.signInManager = signInManager;
         }
-
+               
         [HttpGet]
-        public IActionResult Login()
+        public async Task<IActionResult> Login()
         {
+            // clear the existing external cookie
+            await this.HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
 
             return View();
         }
