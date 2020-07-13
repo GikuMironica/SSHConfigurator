@@ -33,7 +33,7 @@ namespace SSHConfigurator.Services
 
             // Create a socket connection to the server
             ldapConnection.Connect(this._ldapSettings.ServerName, this._ldapSettings.ServerPort);
-
+            ldapConnection.Bind(this._ldapSettings.Credentials.DomainUserName, this._ldapSettings.Credentials.Password);
             return ldapConnection;
         }
 
