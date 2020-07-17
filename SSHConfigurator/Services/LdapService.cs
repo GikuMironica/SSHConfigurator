@@ -33,21 +33,21 @@ namespace SSHConfigurator.Services
 
             // Create a socket connection to the server
             ldapConnection.Connect(this._ldapSettings.ServerName, this._ldapSettings.ServerPort);
-            ldapConnection.Bind(this._ldapSettings.Credentials.DomainUserName, this._ldapSettings.Credentials.Password);
+            // bind anonymously
+            ldapConnection.Bind(_ldapSettings.Credentials.DomainUserName, _ldapSettings.Credentials.Password);
             return ldapConnection;
         }
 
 
         public bool Authenticate(string distinguishedName, string password)
         {
-            using (var ldapConnection = new LdapConnection() { SecureSocketLayer = true })
+            using (var ldapConnection = new LdapConnection() { SecureSocketLayer = false })
             {
                 ldapConnection.Connect(this._ldapSettings.ServerName, this._ldapSettings.ServerPort);
 
                 try
                 {
                     ldapConnection.Bind(distinguishedName, password);
-
                     return true;
                 }
                 catch (Exception)
@@ -61,10 +61,11 @@ namespace SSHConfigurator.Services
         {
             THUMember user = null;
 
-            var filter = $"(&(objectClass=user)(name={userName}))";
+            var filter = $"(&(cn={userName}))";
 
             using (var ldapConnection = this.GetConnection())
             {
+               // var searchUser = this._ldapSettings.SearchBase.Replace("Users", userName);
                 var search = ldapConnection.Search(
                     this._ldapSettings.SearchBase,
                     LdapConnection.SCOPE_SUB,
@@ -177,7 +178,7 @@ namespace SSHConfigurator.Services
                 Email = attributeSet.getAttribute("mail")?.StringValue,
                 
             };
-
+                        
             return ldapUser;
         }
 
