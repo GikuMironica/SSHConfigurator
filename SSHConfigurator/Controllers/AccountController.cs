@@ -42,7 +42,7 @@ namespace SSHConfigurator.Controllers
                                 
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("index", "home");
+                    RedirectToAction("Index", "Home");
                 }
 
 

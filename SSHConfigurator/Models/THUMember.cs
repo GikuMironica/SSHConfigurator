@@ -10,8 +10,6 @@ namespace SSHConfigurator.Models
 {
     public class THUMember : IdentityUser, ILdapEntry
     {        
-        public Int64 LifetimeEnd { get; set; }
-
         [NotMapped]
         public string ObjectSid { get; set; }
 

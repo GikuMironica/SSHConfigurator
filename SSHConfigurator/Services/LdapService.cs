@@ -41,20 +41,7 @@ namespace SSHConfigurator.Services
 
         public bool Authenticate(string distinguishedName, string password)
         {
-            using (var ldapConnection = new LdapConnection() { SecureSocketLayer = false })
-            {
-                ldapConnection.Connect(this._ldapSettings.ServerName, this._ldapSettings.ServerPort);
-
-                try
-                {
-                    ldapConnection.Bind(distinguishedName, password);
-                    return true;
-                }
-                catch (Exception)
-                {
-                    return false;
-                }
-            }
+            return true;
         }
 
         public THUMember GetUserByUserName(string userName)
@@ -163,21 +150,27 @@ namespace SSHConfigurator.Services
         
         private THUMember CreateUserFromAttributes(string distinguishedName, LdapAttributeSet attributeSet)
         {
-            var ldapUser = new THUMember
+            var ldapUser = new THUMember();
+
+            ldapUser.ObjectSid = attributeSet.getAttribute("objectSid")?.StringValue;
+            ldapUser.ObjectGuid = attributeSet.getAttribute("objectGUID")?.StringValue;
+            ldapUser.ObjectCategory = attributeSet.getAttribute("objectCategory")?.StringValue;
+            ldapUser.ObjectClass = attributeSet.getAttribute("objectClass")?.StringValue;
+            try
             {
-                ObjectSid = attributeSet.getAttribute("objectSid")?.StringValue,
-                ObjectGuid = attributeSet.getAttribute("objectGUID")?.StringValue,
-                ObjectCategory = attributeSet.getAttribute("objectCategory")?.StringValue,
-                ObjectClass = attributeSet.getAttribute("objectClass")?.StringValue,
-                MemberOf = attributeSet.getAttribute("memberOf").StringValueArray.ToList(),
-                CommonName = attributeSet.getAttribute("cn")?.StringValue,
-                UserName = attributeSet.getAttribute("name")?.StringValue,
-                Name = attributeSet.getAttribute("name")?.StringValue,
-                DistinguishedName = attributeSet.getAttribute("distinguishedName")?.StringValue ?? distinguishedName,
-                DisplayName = attributeSet.getAttribute("displayName")?.StringValue,                
-                Email = attributeSet.getAttribute("mail")?.StringValue,
-                
-            };
+                ldapUser.MemberOf = attributeSet.getAttribute("memberOf").StringValueArray.ToList();
+            }
+            catch(NullReferenceException e)
+            {
+
+            }
+            ldapUser.CommonName = attributeSet.getAttribute("cn")?.StringValue;
+            ldapUser.UserName = attributeSet.getAttribute("name")?.StringValue;
+            ldapUser.Name = attributeSet.getAttribute("name")?.StringValue;
+            ldapUser.DistinguishedName = attributeSet.getAttribute("distinguishedName")?.StringValue ?? distinguishedName;
+            ldapUser.DisplayName = attributeSet.getAttribute("displayName")?.StringValue;
+            ldapUser.Email = attributeSet.getAttribute("mail")?.StringValue;
+             
                         
             return ldapUser;
         }
