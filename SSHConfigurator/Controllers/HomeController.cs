@@ -28,7 +28,6 @@ namespace SSHConfigurator.Controllers
         public async Task<IActionResult> Index()
         {
             ViewBag.UserName = User.Identity.Name;
-            await signInManager.SignOutAsync();
             return View();
         }
                 

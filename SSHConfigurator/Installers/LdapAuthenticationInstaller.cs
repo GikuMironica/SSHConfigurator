@@ -29,6 +29,9 @@ namespace SSHConfigurator.Installers
             .AddSignInManager<LdapSignInManager>()
             .AddEntityFrameworkStores<DataContext>()
             .AddDefaultTokenProviders();
+
+            // Allowed Courses Configuration
+            services.Configure<AllowedCourses>(configuration.GetSection("Courses"));
         }
     }
 }
