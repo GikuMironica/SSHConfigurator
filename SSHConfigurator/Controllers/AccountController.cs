@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace SSHConfigurator.Controllers
 {
-    [AllowAnonymous]
+    
     public class AccountController : Controller
     {
         private readonly LdapUserManager userManager;
@@ -23,7 +23,8 @@ namespace SSHConfigurator.Controllers
             this.userManager = userManager;
             this.signInManager = signInManager;
         }
-               
+
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Login()
         {
@@ -33,8 +34,10 @@ namespace SSHConfigurator.Controllers
             return View();
         }
 
+
+        [AllowAnonymous]
         [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl)
         {
             if (ModelState.IsValid)
             {
@@ -42,15 +45,35 @@ namespace SSHConfigurator.Controllers
                                 
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("index", "home");
+                    if (!string.IsNullOrEmpty(returnUrl))
+                    {
+                        return LocalRedirect(returnUrl);
+                    }
+                    else
+                    {
+                        return RedirectToAction("index", "home");
+                    }
                 }
-
+                else if (result.IsNotAllowed)
+                {
+                    ModelState.AddModelError(string.Empty, "You must be enrolled in a specific course to access this platform");
+                    return View(model);
+                }
 
                 ModelState.AddModelError(string.Empty, "Invalid Login Attempt");
 
             }
 
             return View(model);
+        }
+
+
+        
+        [HttpPost]
+        public async Task<IActionResult> Logout()
+        {
+            await signInManager.SignOutAsync();
+            return RedirectToAction("login", "account");
         }
     }
 }
