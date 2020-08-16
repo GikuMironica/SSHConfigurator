@@ -158,7 +158,7 @@ namespace SSHConfigurator.Services
             ldapUser.ObjectClass = attributeSet.getAttribute("objectClass")?.StringValue;
             try
             {
-                ldapUser.MemberOf = attributeSet.getAttribute("memberOf").StringValueArray.ToList();
+                ldapUser.MemberOf = attributeSet.getAttribute("memberOf")?.StringValueArray.ToList();
             }
             catch(NullReferenceException e)
             {
