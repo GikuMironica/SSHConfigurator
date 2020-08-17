@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SSHConfigurator.Models;
+using SSHConfigurator.ViewModels;
+using ErrorViewModel = SSHConfigurator.ViewModels.ErrorViewModel;
 
 namespace SSHConfigurator.Controllers
 {
@@ -30,7 +32,34 @@ namespace SSHConfigurator.Controllers
             ViewBag.UserName = User.Identity.Name;
             return View();
         }
-                
+            
+        [HttpPost]
+        public async Task<IActionResult> DeleteKey(string name)
+        {
+            /*
+             * 1. Access file system
+             * 2. Delete folder + pub key
+             */
+            return RedirectToAction("Index");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> UploadKey()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UploadKey(UploadKeyViewModel uploadKeyViewModel)
+        {
+            if (ModelState.IsValid)
+            {
+
+                return RedirectToAction("Index");
+            }
+            return View();            
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

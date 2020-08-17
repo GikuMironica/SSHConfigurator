@@ -1,40 +1,42 @@
-﻿@{
+﻿@*https://fontawesome.com/ - for icons*@
+@{
     ViewData["Title"] = "Home Page";
 }
 
 
-    <div class="card shadow rounded">
+<div class="card shadow rounded">
 
-        <div class="card-header bg-dark text-white">
-            <div class="text-center">
-                <b>Available virtual machines</b>
-            </div>
+    <div class="card-header bg-dark text-white">
+        <div class="text-center">
+            <b>Available virtual machines</b>
         </div>
+    </div>
 
-        <div class="card-body mb-1">
-            <div class="card rounded mt-1">
-                <div class="card-body">
+    <div class="card-body mb-1">
+        <div class="card rounded mt-1">
+            <div class="card-body">
 
-                    <div class="row">
-                        <div class="col-2">
-                            <b>i-linux-01</b>
-                        </div>
-                        @*Display pub key file name*@
-                        <div class="col text-center">
-                            <b>pub key</b>
-                        </div>
-                        @*Delete key function*@
-                        <div class="col-3 text-right">
-                            <form asp-action="DeleteKey" asp-controller="Home" asp-route-name="as"
-                                  method="post">
-                                <button type="submit" class="text-white btn btn-danger"><i class="fas fa-trash-alt"></i></button>
-                            </form>
-                                                            
-                        </div>
+                <div class="row">
+                    <div class="col-2">
+                        <b>i-linux-01</b>
+                    </div>
+                    @*Display pub key file name*@
+                    <div class="col text-center">
+                        <b>pub key</b>
+                    </div>
+                    @*Delete key function*@
+                    <div class="col-3 text-right">
+                        <form asp-action="DeleteKey" asp-controller="Home" asp-route-name="as"
+                              method="post">
+                            <a asp-action=UploadKey asp-controller="Home" class="btn btn-secondary"><i class=" fas fa-cloud-upload-alt"></i></a>
+                            <button type="submit" class="text-white btn btn-danger"><i class="fas fa-trash-alt"></i></button>
+                        </form>
 
                     </div>
+
                 </div>
             </div>
-        </div>        
-
+        </div>
     </div>
+
+</div>
