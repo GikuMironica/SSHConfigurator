@@ -30,6 +30,14 @@ namespace SSHConfigurator.Controllers
         public async Task<IActionResult> Index()
         {
             ViewBag.UserName = User.Identity.Name;
+
+            /**
+             * 1. Access File system
+             * 2. Check if folder with username exists
+             * 3. Check if pub key exists in it
+             * 4. Parse pub key name, display the name ( pass through viewmodel )
+             */
+
             return View();
         }
             
@@ -54,7 +62,12 @@ namespace SSHConfigurator.Controllers
         {
             if (ModelState.IsValid)
             {
-
+                /**
+                 * 1. Access File system
+                 * 2. Check if folder exist / Create
+                 * 3. If pub key exists, delete
+                 * 4. Store the new pub key
+                 */
                 return RedirectToAction("Index");
             }
             return View();            
