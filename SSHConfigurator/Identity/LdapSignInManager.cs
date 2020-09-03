@@ -16,6 +16,7 @@ namespace SSHConfigurator.Identity
     public class LdapSignInManager : SignInManager<THUMember>
     {
         private readonly IOptions<AllowedCourses> coursesOptions;
+        private readonly LdapUserManager ldapUserManager;
 
         public LdapSignInManager(LdapUserManager ldapUserManager, IHttpContextAccessor contextAccessor, IUserClaimsPrincipalFactory<THUMember> claimsFactory,
             IOptions<IdentityOptions> optionsAccessor, ILogger<LdapSignInManager> logger, IAuthenticationSchemeProvider schemes, IUserConfirmation<THUMember> confirmation,
@@ -23,11 +24,12 @@ namespace SSHConfigurator.Identity
             : base(ldapUserManager, contextAccessor, claimsFactory, optionsAccessor, logger, schemes, confirmation)
         {
             this.coursesOptions = coursesOptions;
+            this.ldapUserManager = ldapUserManager;
         }
 
         public override async Task<SignInResult> PasswordSignInAsync(string userName, string password, bool rememberMe, bool lockOutOnFailure)
         {
-            var user = await this.UserManager.FindByNameAsync(userName);
+            var user = await ldapUserManager.FindByNameAsync(userName , password);
 
             if (user == null)
             {

@@ -17,6 +17,8 @@ namespace SSHConfigurator.Controllers
     {
         private readonly LdapUserManager userManager;
         private readonly LdapSignInManager signInManager;
+        private readonly string _notAllowedLoginMessage = "You must be enrolled in a specific course to access this platform";
+        private readonly string _invalidLoginMessage = "Invalid Login Attempt";
 
         public AccountController(LdapUserManager userManager, LdapSignInManager signInManager)
         {
@@ -56,11 +58,11 @@ namespace SSHConfigurator.Controllers
                 }
                 else if (result.IsNotAllowed)
                 {
-                    ModelState.AddModelError(string.Empty, "You must be enrolled in a specific course to access this platform");
+                    ModelState.AddModelError(string.Empty, _notAllowedLoginMessage);
                     return View(model);
                 }
 
-                ModelState.AddModelError(string.Empty, "Invalid Login Attempt");
+                ModelState.AddModelError(string.Empty, _invalidLoginMessage);
 
             }
 
