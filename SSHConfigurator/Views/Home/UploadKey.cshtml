@@ -1,0 +1,46 @@
+﻿@model SSHConfigurator.ViewModels.UploadKeyViewModel
+@{
+    ViewData["Title"] = "Upload Key";
+}
+
+
+<div class="card shadow rounded">
+    <div class="card-header bg-dark text-white">
+        <div class="text-center">
+            <b>Upload Key</b>
+        </div>
+    </div>
+    <div class="card-body p-2 m-2">
+        <form enctype="multipart/form-data" method="post" asp-action="UploadKey">
+            <div class="row p-2">
+                <div class="col">
+                    <div class="custom-file">
+                        <input asp-for="KeyFile" class="form-control custom-file-input">
+                        <label class="custom-file-label">Choose File....</label>
+                        <span asp-validation-for="KeyFile" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="row p-2 pt-3">
+                <div class="col">
+                    <button type="submit" class="btn btn-success">Save</button>
+                    <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+                </div>
+            </div>
+        </form> 
+    </div>
+ 
+
+</div>
+
+@section Scripts{
+    <script>
+        $(document).ready(function () {
+            $('.custom-file-input').on("change", function () {
+                var fileName = $(this).val().split("\\").pop();
+                $(this).next('.custom-file-label').html(fileName);
+            });
+        }
+        );
+    </script>
+}

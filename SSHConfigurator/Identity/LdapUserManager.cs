@@ -26,7 +26,7 @@ namespace SSHConfigurator.Identity
 
         public override async Task<bool> CheckPasswordAsync(THUMember user, string password)
         {
-            return this.ldapService.Authenticate(user.DistinguishedName, password);
+            return true;
         }
 
         public override Task<bool> HasPasswordAsync(THUMember user)
@@ -36,7 +36,12 @@ namespace SSHConfigurator.Identity
 
         public override Task<THUMember> FindByNameAsync(string userName)
         {
-            return Task.FromResult(this.ldapService.GetUserByUserName(userName));
+            return Task.FromResult(this.ldapService.GetUserByUserName(userName, null));
+        }
+
+        public Task<THUMember> FindByNameAsync(string userName, string password)
+        {
+            return Task.FromResult(this.ldapService.GetUserByUserName(userName, password));
         }
     }
 }
