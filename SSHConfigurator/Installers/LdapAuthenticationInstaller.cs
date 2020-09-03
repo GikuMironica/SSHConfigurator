@@ -11,6 +11,7 @@ using SSHConfigurator.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.EntityFrameworkCore.InMemory;
 using System.Threading.Tasks;
 
 namespace SSHConfigurator.Installers
@@ -22,8 +23,7 @@ namespace SSHConfigurator.Installers
 
             // LDAP-Authentication configurations
             services.Configure<LdapSettings>(configuration.GetSection("LdapSettings"));
-            services.AddDbContext<DataContext>(options => options.UseSqlServer(
-                    configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<DataContext>(options => options.UseInMemoryDatabase("testdb"));
             services.AddIdentity<THUMember, IdentityRole>()
             .AddUserManager<LdapUserManager>()
             .AddSignInManager<LdapSignInManager>()
