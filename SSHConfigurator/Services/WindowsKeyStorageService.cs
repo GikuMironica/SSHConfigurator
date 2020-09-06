@@ -7,9 +7,9 @@ namespace SSHConfigurator.Services
 {
     public class WindowsKeyStorageService : IKeyStorageService
     {
-        public bool IsUserExistent(string Username)
+        public Task<bool> IsUserExistent(string Username)
         {
-            return false;
+            return Task.FromResult(false);
         }
 
         public void StorePublicKey(string KeyPath)

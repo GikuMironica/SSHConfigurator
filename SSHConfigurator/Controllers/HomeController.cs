@@ -37,7 +37,7 @@ namespace SSHConfigurator.Controllers
             var UserData = new HomeViewModel
             {
                 UserName = User.Identity.Name,
-                HasKey = IsExistent
+                HasKey = await IsExistent
             };
 
             /**

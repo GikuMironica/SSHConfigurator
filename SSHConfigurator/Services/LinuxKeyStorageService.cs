@@ -18,23 +18,27 @@ namespace SSHConfigurator.Services
         }
 
 
-        public bool IsUserExistent(string Username)
+        public async Task<bool> IsUserExistent(string Username)
         {            
             var process = new Process()
             {
                 StartInfo = new ProcessStartInfo
                 {                    
-                    FileName = string.Format(_ShellScripts.CheckUserScript, Username),                    
+                    FileName = "bash",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
                     UseShellExecute = false,
                     CreateNoWindow = true,
+                    RedirectStandardInput = true
                 }
             };
             process.Start();
-            string output = process.StandardOutput.ReadToEnd();
-            string error = process.StandardError.ReadToEnd();
+            await process.StandardInput.WriteLineAsync(string.Format(_ShellScripts.CheckUserScript, Username));
+            process.StandardInput.Close();
+            string output = await process.StandardOutput.ReadLineAsync();
+            string error = await process.StandardError.ReadLineAsync();
             process.WaitForExit();
+            process.Close();
 
             if (!string.IsNullOrEmpty(error)) { return false ; }
             if (output.Contains("1"))

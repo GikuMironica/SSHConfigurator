@@ -7,7 +7,7 @@ namespace SSHConfigurator.Services
 {
     public interface IKeyStorageService
     {
-        public bool IsUserExistent(string Username);
+        public Task<bool> IsUserExistent(string Username);
 
         public void StorePublicKey(string KeyPath);
     }
