@@ -9,10 +9,12 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using SSHConfigurator.Data;
 using SSHConfigurator.Models;
+using SSHConfigurator.Options;
 using SSHConfigurator.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace SSHConfigurator.Installers
@@ -25,6 +27,21 @@ namespace SSHConfigurator.Installers
             services.AddTransient<ILdapService, LdapService>();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+
+
+            // Configure the implementation for the public key storage depending on the OS.
+            var isLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
+            if (isLinux)
+            {
+                services.AddSingleton<IKeyStorageService, LinuxKeyStorageService>();
+                services.Configure<KeyStorageScripts>(configuration.GetSection("ShellScripts"));
+            }
+            else
+            {
+                services.AddSingleton<IKeyStorageService, WindowsKeyStorageService>();
+                services.Configure<KeyStorageScripts>(configuration.GetSection("PowerShellScripts"));
+            }        
+
 
             // Configure MVC, require user to be logged in to use app
             services.AddControllersWithViews(options => {

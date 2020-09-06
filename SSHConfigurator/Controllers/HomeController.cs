@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SSHConfigurator.Models;
+using SSHConfigurator.Services;
 using SSHConfigurator.ViewModels;
 using ErrorViewModel = SSHConfigurator.ViewModels.ErrorViewModel;
 
@@ -18,18 +19,26 @@ namespace SSHConfigurator.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly UserManager<THUMember> userManager;
         private readonly SignInManager<THUMember> signInManager;
+        private readonly IKeyStorageService keyStorageService;
 
-        public HomeController(ILogger<HomeController> logger, UserManager<THUMember> userManager, SignInManager<THUMember> signInManager)
+        public HomeController(ILogger<HomeController> logger, UserManager<THUMember> userManager, SignInManager<THUMember> signInManager,
+                              IKeyStorageService keyStorageService)
         {
             _logger = logger;
             this.userManager = userManager;
             this.signInManager = signInManager;
+            this.keyStorageService = keyStorageService;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            ViewBag.UserName = User.Identity.Name;
+            var IsExistent = keyStorageService.IsUserExistent(User.Identity.Name);
+            var UserData = new HomeViewModel
+            {
+                UserName = User.Identity.Name,
+                HasKey = IsExistent
+            };
 
             /**
              * 1. Access File system
@@ -38,7 +47,7 @@ namespace SSHConfigurator.Controllers
              * 4. Parse pub key name, display the name ( pass through viewmodel )
              */
 
-            return View();
+            return View(UserData);
         }
             
         [HttpPost]

@@ -1,0 +1,5 @@
+{
+  "ShellScripts": {
+    "CheckUserScript": "grep -c '^{0}:' /etc/passwd"
+  }  
+}

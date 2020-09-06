@@ -1,4 +1,5 @@
 ﻿@*https://fontawesome.com/ - for icons*@
+@model SSHConfigurator.ViewModels.HomeViewModel
 @{
     ViewData["Title"] = "Home Page";
 }
@@ -21,9 +22,18 @@
                         <b>i-linux-01</b>
                     </div>
                     @*Display pub key file name*@
-                    <div class="col text-center">
-                        <b>pub key</b>
-                    </div>
+                <div class="col text-center">
+                    @if (Model.HasKey)
+                    {
+                        <i class="fas fa-check fa-2x" style="color:lawngreen"></i>
+                        <p>Public key uploaded</p>
+                    }
+                    else
+                    {
+                        <i class="fas fa-times fa-2x" style="color:red"></i>
+                        <p>No public key found</p>
+                    }
+                </div>
                     @*Delete key function*@
                     <div class="col-3 text-right">
                         <form asp-action="DeleteKey" asp-controller="Home" asp-route-name="as"
