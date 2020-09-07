@@ -1,5 +1,8 @@
 {
   "ShellScripts": {
-    "CheckUserScript": "grep -c '^{0}:' /etc/passwd"
+    "CheckUserAndKeyScript": "grep -c '^{0}:' /etc/passwd; cd /home; if [ ! -d \"{0}\" ]; then echo 0; fi; cd {0}; if [ ! -d \".ssh\" ]; then echo 0; fi; cd .ssh; if [ ! -e authorized_keys ]; then echo 0; fi;",
+    "CreateUserScript": "TODO",
+    "StoreKeyScript": "TODO",
+    "DeleteKeyScript": "TODO"
   }  
 }
