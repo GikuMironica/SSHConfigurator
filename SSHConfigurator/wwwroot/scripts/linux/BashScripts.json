@@ -1,12 +1,8 @@
 {
   "ShellScripts": {
-    "CheckUserScript": 
-      "grep -c '^{0}:' /etc/passwd",
-    "CreateUserScript": 
-      "TODO",
-    "StoreKeyScript": 
-      "TODO",
-    "DeleteKeyScript": 
-      "TODO"
+    "CheckUserScript": "grep -c '^gicu:' /etc/passwd; cd /home; if [ ! -d \"gicu\" ]; then echo 0; else echo 1; fi; cd gicu; if [ ! -d \".ssh\" ]; then echo 0; else echo 1; fi; cd .ssh;",
+    "CreateUserScript": "TODO",
+    "StoreKeyScript": "TODO",
+    "DeleteKeyScript": "TODO"
   }  
 }
