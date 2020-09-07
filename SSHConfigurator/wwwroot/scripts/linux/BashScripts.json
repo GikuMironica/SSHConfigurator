@@ -1,5 +1,12 @@
 {
   "ShellScripts": {
-    "CheckUserScript": "grep -c '^{0}:' /etc/passwd"
+    "CheckUserScript": 
+      "grep -c '^{0}:' /etc/passwd",
+    "CreateUserScript": 
+      "TODO",
+    "StoreKeyScript": 
+      "TODO",
+    "DeleteKeyScript": 
+      "TODO"
   }  
 }

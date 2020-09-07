@@ -1,5 +1,12 @@
 {
   "PowerShellScripts": {
-    "CheckUserScript": "TODO"
+    "CheckUserScript": 
+      "TODO",
+    "CreateUserScript": 
+      "TODO",
+    "StoreKeyScript": 
+      "TODO",
+    "DeleteKeyScript": 
+      "TODO"
   }
 }

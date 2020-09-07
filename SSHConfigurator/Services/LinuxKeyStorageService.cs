@@ -2,6 +2,7 @@
 using SSHConfigurator.Options;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -23,7 +24,7 @@ namespace SSHConfigurator.Services
             var process = new Process()
             {
                 StartInfo = new ProcessStartInfo
-                {                    
+                {                                        
                     FileName = "bash",
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
@@ -33,7 +34,7 @@ namespace SSHConfigurator.Services
                 }
             };
             process.Start();
-            await process.StandardInput.WriteLineAsync(string.Format(_ShellScripts.CheckUserScript, Username));
+            await process.StandardInput.WriteLineAsync(string.Format(_ShellScripts.CheckUserAndKeyScript, Username));
             process.StandardInput.Close();
             string output = await process.StandardOutput.ReadLineAsync();
             string error = await process.StandardError.ReadLineAsync();
