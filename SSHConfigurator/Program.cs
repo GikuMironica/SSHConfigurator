@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
@@ -18,6 +19,11 @@ namespace SSHConfigurator
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((hostingContext, config) =>
+                {
+                    config.AddJsonFile(Path.Combine(Environment.CurrentDirectory, "wwwroot", "scripts", "linux", "BashScripts.json"), optional: false, reloadOnChange: true);
+                    config.AddJsonFile(Path.Combine(Environment.CurrentDirectory, "wwwroot", "scripts", "windows", "PowerShellScripts.json"), optional: false, reloadOnChange: true);
+                })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

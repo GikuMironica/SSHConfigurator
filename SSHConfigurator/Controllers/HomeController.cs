@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using SSHConfigurator.Domain;
 using SSHConfigurator.Models;
+using SSHConfigurator.Services;
 using SSHConfigurator.ViewModels;
 using ErrorViewModel = SSHConfigurator.ViewModels.ErrorViewModel;
 
@@ -18,41 +23,41 @@ namespace SSHConfigurator.Controllers
         private readonly ILogger<HomeController> _logger;
         private readonly UserManager<THUMember> userManager;
         private readonly SignInManager<THUMember> signInManager;
+        private readonly IKeyStorageService keyStorageService;
+        private readonly IWebHostEnvironment iHostingEnvironment;
 
-        public HomeController(ILogger<HomeController> logger, UserManager<THUMember> userManager, SignInManager<THUMember> signInManager)
+        public HomeController(ILogger<HomeController> logger, UserManager<THUMember> userManager, SignInManager<THUMember> signInManager,
+                              IKeyStorageService keyStorageService, IWebHostEnvironment IHostingEnvironment)
         {
             _logger = logger;
             this.userManager = userManager;
             this.signInManager = signInManager;
+            this.keyStorageService = keyStorageService;
+            iHostingEnvironment = IHostingEnvironment;
         }
 
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            ViewBag.UserName = User.Identity.Name;
+            var IsExistent = await keyStorageService.HasKeyAsync(User.Identity.Name);
+            var UserData = new HomeViewModel
+            {
+                UserName = User.Identity.Name,
+                HasKey =  IsExistent
+            };                    
 
-            /**
-             * 1. Access File system
-             * 2. Check if folder with username exists
-             * 3. Check if pub key exists in it
-             * 4. Parse pub key name, display the name ( pass through viewmodel )
-             */
-
-            return View();
+            return View(UserData);
         }
             
         [HttpPost]
-        public async Task<IActionResult> DeleteKey(string name)
+        public async Task<IActionResult> DeleteKey()
         {
-            /*
-             * 1. Access file system
-             * 2. Delete folder + pub key
-             */
+            await keyStorageService.DeletePublicKeyAsync(User.Identity.Name);
             return RedirectToAction("Index");
         }
 
         [HttpGet]
-        public async Task<IActionResult> UploadKey()
+        public IActionResult UploadKey()
         {
             return View();
         }
@@ -62,12 +67,21 @@ namespace SSHConfigurator.Controllers
         {
             if (ModelState.IsValid)
             {
-                /**
-                 * 1. Access File system
-                 * 2. Check if folder exist / Create
-                 * 3. If pub key exists, delete
-                 * 4. Store the new pub key
-                 */
+                // temporarily store the key in the www/temp-keys folder
+                var key = await StoreKeyAtTempLocationAsync(uploadKeyViewModel.KeyFile, User.Identity.Name);
+
+                // call a script to delete the existing key if exists, and store the new key. 
+                var result = await keyStorageService.StorePublicKeyAsync(key.Keyname , User.Identity.Name);
+
+                if (!result.IsSuccessful)
+                {
+                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                    return View(uploadKeyViewModel);
+                }
+                // after file copied to the users .ssh folder in authorized_keys, delete key from temp folder
+                if (System.IO.File.Exists(key.Keypath))
+                    System.IO.File.Delete(key.Keypath);
+
                 return RedirectToAction("Index");
             }
             return View();            
@@ -78,5 +92,24 @@ namespace SSHConfigurator.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        private async Task<KeyData> StoreKeyAtTempLocationAsync(IFormFile key, string username)
+        {
+            string uploadsFolder = Path.Combine(iHostingEnvironment.WebRootPath, "temp-keys");
+            string uniqueFileName = Guid.NewGuid().ToString() + "_" + username;
+            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+            //await key.CopyToAsync(new FileStream(filePath, FileMode.Create));
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await key.CopyToAsync(stream);
+            }
+
+            return new KeyData
+            {
+                Keyname = uniqueFileName,
+                Keypath = filePath
+            };
+        }
+
     }
 }
