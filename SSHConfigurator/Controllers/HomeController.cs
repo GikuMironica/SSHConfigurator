@@ -44,8 +44,7 @@ namespace SSHConfigurator.Controllers
             {
                 UserName = User.Identity.Name,
                 HasKey =  IsExistent
-            };                    
-
+            };
             return View(UserData);
         }
             
@@ -75,7 +74,9 @@ namespace SSHConfigurator.Controllers
 
                 if (!result.IsSuccessful)
                 {
-                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                    // log the error
+                    _logger.LogError(result.ErrorMessage);
+                    ModelState.AddModelError(string.Empty, "Something went wrong...");
                     return View(uploadKeyViewModel);
                 }
                 // after file copied to the users .ssh folder in authorized_keys, delete key from temp folder

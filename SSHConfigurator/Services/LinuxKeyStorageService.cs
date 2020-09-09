@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using SSHConfigurator.Domain;
 using SSHConfigurator.Options;
 using System;
@@ -14,11 +15,13 @@ namespace SSHConfigurator.Services
     {
         private readonly KeyStorageScripts _ShellScripts;
         private readonly SystemAdmin _admin;
+        private readonly ILogger<LinuxKeyStorageService> _logger;
 
-        public LinuxKeyStorageService(IOptions<KeyStorageScripts> scripts, IOptions<SystemAdmin> admin)
+        public LinuxKeyStorageService(IOptions<KeyStorageScripts> scripts, IOptions<SystemAdmin> admin, ILogger<LinuxKeyStorageService> logger)
         {
             _ShellScripts = scripts.Value;
             _admin = admin.Value;
+            _logger = logger;
         }
 
         
@@ -45,7 +48,11 @@ namespace SSHConfigurator.Services
             process.WaitForExit();
             process.Close();
 
-            if (!string.IsNullOrEmpty(error)) { return false ; }
+            if (!string.IsNullOrEmpty(error)) 
+            {
+                _logger.LogError(error);
+                return false ; 
+            }
             if (output.Contains("0"))
                 return false;
 
