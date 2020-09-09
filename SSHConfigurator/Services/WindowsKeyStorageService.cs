@@ -12,7 +12,7 @@ namespace SSHConfigurator.Services
             return Task.FromResult(false);
         }
 
-        public void StorePublicKey(string KeyPath)
+        public Task<bool> StorePublicKey(string Keyname, string Username)
         {
             throw new NotImplementedException();
         }

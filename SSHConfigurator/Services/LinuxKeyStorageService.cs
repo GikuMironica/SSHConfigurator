@@ -36,7 +36,7 @@ namespace SSHConfigurator.Services
             process.Start();
             await process.StandardInput.WriteLineAsync(string.Format(_ShellScripts.CheckUserAndKeyScript, Username));
             process.StandardInput.Close();
-            string output = await process.StandardOutput.ReadLineAsync();
+            string output = await process.StandardOutput.ReadToEndAsync();
             string error = await process.StandardError.ReadLineAsync();
             process.WaitForExit();
             process.Close();
@@ -48,9 +48,34 @@ namespace SSHConfigurator.Services
             return true;
         }
 
-        public void StorePublicKey(string KeyPath)
+        public async Task<bool> StorePublicKey(string Keyname, string Username)
         {
-            throw new NotImplementedException();
+            var process = new Process()
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "bash",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardInput = true
+                }
+            };
+            process.Start();
+            await process.StandardInput.WriteLineAsync(string.Format(_ShellScripts.StoreKeyScript, Username, Keyname));
+            process.StandardInput.Close();
+            string output = await process.StandardOutput.ReadLineAsync();
+            string error = await process.StandardError.ReadLineAsync();
+            process.WaitForExit();
+            process.Close();
+
+            if (!string.IsNullOrEmpty(error)) { return false; }
+            if (output.Contains("0"))
+                return false;
+
+            return true;
         }
+               
     }
 }

@@ -1,8 +1,10 @@
 {
   "ShellScripts": {
-    "CheckUserAndKeyScript": "grep -c '^{0}:' /etc/passwd; cd /home; if [ ! -d \"{0}\" ]; then echo 0; fi; cd {0}; if [ ! -d \".ssh\" ]; then echo 0; fi; cd .ssh; if [ ! -e authorized_keys ]; then echo 0; fi;",
+    "CheckUserAndKeyScript": "grep -c '^{0}:' /etc/passwd; cd /home; if [ ! -d \"{0}\" ]; then echo 0; fi; cd {0}; if [ ! -d \".ssh\" ]; then echo 0; fi; cd .ssh; if [ ! -e \"authorized_keys\" ]; then echo 0; fi;",
     "CreateUserScript": "TODO",
     "StoreKeyScript": "TODO",
     "DeleteKeyScript": "TODO"
-  }  
+  }
 }
+
+// create user if doesnt exist - if [ $(grep -c '^caldobinXa:' /etc/passwd) == 0 ]; then sudo useradd -m krkra1; else echo yes; fi;

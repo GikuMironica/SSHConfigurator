@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -20,14 +23,16 @@ namespace SSHConfigurator.Controllers
         private readonly UserManager<THUMember> userManager;
         private readonly SignInManager<THUMember> signInManager;
         private readonly IKeyStorageService keyStorageService;
+        private readonly IWebHostEnvironment iHostingEnvironment;
 
         public HomeController(ILogger<HomeController> logger, UserManager<THUMember> userManager, SignInManager<THUMember> signInManager,
-                              IKeyStorageService keyStorageService)
+                              IKeyStorageService keyStorageService, IWebHostEnvironment IHostingEnvironment)
         {
             _logger = logger;
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.keyStorageService = keyStorageService;
+            iHostingEnvironment = IHostingEnvironment;
         }
 
         [HttpGet]
@@ -38,14 +43,7 @@ namespace SSHConfigurator.Controllers
             {
                 UserName = User.Identity.Name,
                 HasKey = await IsExistent
-            };
-
-            /**
-             * 1. Access File system
-             * 2. Check if folder with username exists
-             * 3. Check if pub key exists in it
-             * 4. Parse pub key name, display the name ( pass through viewmodel )
-             */
+            };                    
 
             return View(UserData);
         }
@@ -71,12 +69,16 @@ namespace SSHConfigurator.Controllers
         {
             if (ModelState.IsValid)
             {
-                /**
-                 * 1. Access File system
-                 * 2. Check if folder exist / Create
-                 * 3. If pub key exists, delete
-                 * 4. Store the new pub key
-                 */
+                // temporarily store the key in the www/temp-keys folder
+                var fileName = await StoreKeyToTempLocationAsync(uploadKeyViewModel.KeyFile, User.Identity.Name);
+
+                // call a script to delete the existing key if exists, and store the new key. 
+                var result = keyStorageService.StorePublicKey(fileName, User.Identity.Name);
+
+                // after file copied to the users .ssh folder in authorized_keys, delete key from temp folder
+                if (System.IO.File.Exists(fileName))
+                    System.IO.File.Delete(fileName);
+
                 return RedirectToAction("Index");
             }
             return View();            
@@ -87,5 +89,20 @@ namespace SSHConfigurator.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        private async Task<string> StoreKeyToTempLocationAsync(IFormFile key, string username)
+        {
+            string uploadsFolder = Path.Combine(iHostingEnvironment.WebRootPath, "temp-keys");
+            string uniqueFileName = Guid.NewGuid().ToString() + "_" + username;
+            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+            //await key.CopyToAsync(new FileStream(filePath, FileMode.Create));
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await key.CopyToAsync(stream);
+            }
+
+            return filePath;
+        }
+
     }
 }

@@ -9,6 +9,6 @@ namespace SSHConfigurator.Services
     {
         public Task<bool> IsUserExistent(string Username);
 
-        public void StorePublicKey(string KeyPath);
+        public Task<bool> StorePublicKey(string Keyname, string Username);
     }
 }
