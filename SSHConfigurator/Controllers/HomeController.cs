@@ -39,11 +39,11 @@ namespace SSHConfigurator.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var IsExistent = keyStorageService.HasKey(User.Identity.Name);
+            var IsExistent = await keyStorageService.HasKey(User.Identity.Name);
             var UserData = new HomeViewModel
             {
                 UserName = User.Identity.Name,
-                HasKey = await IsExistent
+                HasKey =  IsExistent
             };                    
 
             return View(UserData);

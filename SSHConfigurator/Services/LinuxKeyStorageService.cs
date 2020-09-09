@@ -78,16 +78,18 @@ namespace SSHConfigurator.Services
                 return new StoreKeyResult
                 {
                     IsSuccessful = false,
-                    ErrorMessage = error
+                    ErrorMessage = error + "\n "+ string.Format(_ShellScripts.StoreKeyScript, Username, Keyname, _admin.AdminUsername)
                 };
             }
-            if (output.Contains("0"))
-                return new StoreKeyResult
-                {
-                    IsSuccessful = false,
-                    ErrorMessage = "Something went wrong"
-                };
-
+            if (!string.IsNullOrEmpty(output))
+            {
+                if (output.Contains("0"))
+                    return new StoreKeyResult
+                    {
+                        IsSuccessful = false,
+                        ErrorMessage = "Something went wrong"
+                    };
+            }
             return new StoreKeyResult
             {
                 IsSuccessful = true

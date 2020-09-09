@@ -45,7 +45,7 @@ namespace SSHConfigurator.Installers
 
             // configure the username of the admin
             // It is required for moving the uploaded public key by the students from wwwroot folder to the correct folder.
-            services.Configure<SystemAdmin>(configuration.GetSection("AdminUsername"));
+            services.Configure<SystemAdmin>(configuration.GetSection("SystemAdmin"));
 
             // Configure MVC, require user to be logged in to use app
             services.AddControllersWithViews(options => {
