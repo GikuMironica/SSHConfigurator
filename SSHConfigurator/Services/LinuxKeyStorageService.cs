@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Options;
+using SSHConfigurator.Domain;
 using SSHConfigurator.Options;
 using System;
 using System.Collections.Generic;
@@ -12,14 +13,16 @@ namespace SSHConfigurator.Services
     public class LinuxKeyStorageService : IKeyStorageService
     {
         private readonly KeyStorageScripts _ShellScripts;
+        private readonly SystemAdmin _admin;
 
-        public LinuxKeyStorageService(IOptions<KeyStorageScripts> scripts)
+        public LinuxKeyStorageService(IOptions<KeyStorageScripts> scripts, IOptions<SystemAdmin> admin)
         {
             _ShellScripts = scripts.Value;
+            _admin = admin.Value;
         }
 
 
-        public async Task<bool> IsUserExistent(string Username)
+        public async Task<bool> HasKey(string Username)
         {            
             var process = new Process()
             {
@@ -48,7 +51,7 @@ namespace SSHConfigurator.Services
             return true;
         }
 
-        public async Task<bool> StorePublicKey(string Keyname, string Username)
+        public async Task<StoreKeyResult> StorePublicKey(string Keyname, string Username)
         {
             var process = new Process()
             {
@@ -63,18 +66,32 @@ namespace SSHConfigurator.Services
                 }
             };
             process.Start();
-            await process.StandardInput.WriteLineAsync(string.Format(_ShellScripts.StoreKeyScript, Username, Keyname));
+            await process.StandardInput.WriteLineAsync(string.Format(_ShellScripts.StoreKeyScript, Username, Keyname, _admin.AdminUsername));
             process.StandardInput.Close();
             string output = await process.StandardOutput.ReadLineAsync();
-            string error = await process.StandardError.ReadLineAsync();
+            string error = await process.StandardError.ReadToEndAsync();
             process.WaitForExit();
             process.Close();
 
-            if (!string.IsNullOrEmpty(error)) { return false; }
+            if (!string.IsNullOrEmpty(error))
+            {
+                return new StoreKeyResult
+                {
+                    IsSuccessful = false,
+                    ErrorMessage = error
+                };
+            }
             if (output.Contains("0"))
-                return false;
+                return new StoreKeyResult
+                {
+                    IsSuccessful = false,
+                    ErrorMessage = "Something went wrong"
+                };
 
-            return true;
+            return new StoreKeyResult
+            {
+                IsSuccessful = true
+            };
         }
                
     }

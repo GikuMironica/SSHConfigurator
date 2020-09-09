@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using SSHConfigurator.Domain;
 using SSHConfigurator.Models;
 using SSHConfigurator.Services;
 using SSHConfigurator.ViewModels;
@@ -38,7 +39,7 @@ namespace SSHConfigurator.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var IsExistent = keyStorageService.IsUserExistent(User.Identity.Name);
+            var IsExistent = keyStorageService.HasKey(User.Identity.Name);
             var UserData = new HomeViewModel
             {
                 UserName = User.Identity.Name,
@@ -59,7 +60,7 @@ namespace SSHConfigurator.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> UploadKey()
+        public IActionResult UploadKey()
         {
             return View();
         }
@@ -70,14 +71,19 @@ namespace SSHConfigurator.Controllers
             if (ModelState.IsValid)
             {
                 // temporarily store the key in the www/temp-keys folder
-                var fileName = await StoreKeyToTempLocationAsync(uploadKeyViewModel.KeyFile, User.Identity.Name);
+                var key = await StoreKeyAtTempLocationAsync(uploadKeyViewModel.KeyFile, User.Identity.Name);
 
                 // call a script to delete the existing key if exists, and store the new key. 
-                var result = keyStorageService.StorePublicKey(fileName, User.Identity.Name);
+                var result = await keyStorageService.StorePublicKey(key.Keyname , User.Identity.Name);
 
+                if (!result.IsSuccessful)
+                {
+                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                    return View(uploadKeyViewModel);
+                }
                 // after file copied to the users .ssh folder in authorized_keys, delete key from temp folder
-                if (System.IO.File.Exists(fileName))
-                    System.IO.File.Delete(fileName);
+                if (System.IO.File.Exists(key.Keypath))
+                    System.IO.File.Delete(key.Keypath);
 
                 return RedirectToAction("Index");
             }
@@ -90,7 +96,7 @@ namespace SSHConfigurator.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        private async Task<string> StoreKeyToTempLocationAsync(IFormFile key, string username)
+        private async Task<KeyData> StoreKeyAtTempLocationAsync(IFormFile key, string username)
         {
             string uploadsFolder = Path.Combine(iHostingEnvironment.WebRootPath, "temp-keys");
             string uniqueFileName = Guid.NewGuid().ToString() + "_" + username;
@@ -101,7 +107,11 @@ namespace SSHConfigurator.Controllers
                 await key.CopyToAsync(stream);
             }
 
-            return filePath;
+            return new KeyData
+            {
+                Keyname = uniqueFileName,
+                Keypath = filePath
+            };
         }
 
     }
