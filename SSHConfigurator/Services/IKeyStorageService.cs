@@ -8,8 +8,10 @@ namespace SSHConfigurator.Services
 {
     public interface IKeyStorageService
     {
-        public Task<bool> HasKey(string Username);
+        public Task<bool> HasKeyAsync(string Username);
 
-        public Task<StoreKeyResult> StorePublicKey(string Keyname, string Username);
+        public Task<StoreKeyResult> StorePublicKeyAsync(string Keyname, string Username);
+
+        public Task DeletePublicKeyAsync(string Username);
     }
 }

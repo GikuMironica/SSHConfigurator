@@ -39,7 +39,7 @@ namespace SSHConfigurator.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var IsExistent = await keyStorageService.HasKey(User.Identity.Name);
+            var IsExistent = await keyStorageService.HasKeyAsync(User.Identity.Name);
             var UserData = new HomeViewModel
             {
                 UserName = User.Identity.Name,
@@ -50,12 +50,9 @@ namespace SSHConfigurator.Controllers
         }
             
         [HttpPost]
-        public async Task<IActionResult> DeleteKey(string name)
+        public async Task<IActionResult> DeleteKey()
         {
-            /*
-             * 1. Access file system
-             * 2. Delete folder + pub key
-             */
+            await keyStorageService.DeletePublicKeyAsync(User.Identity.Name);
             return RedirectToAction("Index");
         }
 
@@ -74,7 +71,7 @@ namespace SSHConfigurator.Controllers
                 var key = await StoreKeyAtTempLocationAsync(uploadKeyViewModel.KeyFile, User.Identity.Name);
 
                 // call a script to delete the existing key if exists, and store the new key. 
-                var result = await keyStorageService.StorePublicKey(key.Keyname , User.Identity.Name);
+                var result = await keyStorageService.StorePublicKeyAsync(key.Keyname , User.Identity.Name);
 
                 if (!result.IsSuccessful)
                 {

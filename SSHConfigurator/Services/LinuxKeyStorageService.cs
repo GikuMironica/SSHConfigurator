@@ -21,8 +21,9 @@ namespace SSHConfigurator.Services
             _admin = admin.Value;
         }
 
+        
 
-        public async Task<bool> HasKey(string Username)
+        public async Task<bool> HasKeyAsync(string Username)
         {            
             var process = new Process()
             {
@@ -51,7 +52,8 @@ namespace SSHConfigurator.Services
             return true;
         }
 
-        public async Task<StoreKeyResult> StorePublicKey(string Keyname, string Username)
+
+        public async Task<StoreKeyResult> StorePublicKeyAsync(string Keyname, string Username)
         {
             var process = new Process()
             {
@@ -95,6 +97,26 @@ namespace SSHConfigurator.Services
                 IsSuccessful = true
             };
         }
-               
+
+        public async Task DeletePublicKeyAsync(string Username)
+        {
+            var process = new Process()
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = "bash",
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardInput = true
+                }
+            };
+            process.Start();
+            await process.StandardInput.WriteLineAsync(string.Format(_ShellScripts.DeleteKeyScript, Username));
+            process.StandardInput.Close();
+            process.WaitForExit();
+            process.Close();
+        }
     }
 }

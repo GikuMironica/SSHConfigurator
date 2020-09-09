@@ -8,12 +8,17 @@ namespace SSHConfigurator.Services
 {
     public class WindowsKeyStorageService : IKeyStorageService
     {
-        public Task<bool> HasKey(string Username)
+        public async Task DeletePublicKeyAsync(string Username)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> HasKeyAsync(string Username)
         {
             return Task.FromResult(false);
         }
 
-        public Task<StoreKeyResult> StorePublicKey(string Keyname, string Username)
+        public Task<StoreKeyResult> StorePublicKeyAsync(string Keyname, string Username)
         {
             throw new NotImplementedException();
         }
