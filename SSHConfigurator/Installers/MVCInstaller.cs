@@ -47,6 +47,9 @@ namespace SSHConfigurator.Installers
             // It is required for moving the uploaded public key by the students from wwwroot folder to the correct folder.
             services.Configure<SystemAdmin>(configuration.GetSection("SystemAdmin"));
 
+            // configure google recaptcha credentials with Options Pattern
+            services.Configure<RecaptchaSettings>(configuration.GetSection("GoogleReCaptcha"));
+
             // Configure MVC, require user to be logged in to use app
             services.AddControllersWithViews(options => {
                 var policy = new AuthorizationPolicyBuilder()                                              

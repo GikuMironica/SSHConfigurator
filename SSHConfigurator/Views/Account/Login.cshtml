@@ -1,4 +1,6 @@
 ﻿@model SSHConfigurator.ViewModels.LoginViewModel
+@using Microsoft.Extensions.Options
+@inject IOptions<SSHConfigurator.Options.RecaptchaSettings> RecaptchaSettings
 @{
     ViewBag.Title = "User Login";
 }
@@ -30,4 +32,20 @@
             <button type="submit" class="btn btn-primary">Login</button>
         </form>
     </div>
-</div> 
+</div>
+
+@section Scripts{
+    <script src="https://www.google.com/recaptcha/api.js?render=@RecaptchaSettings.Value.ReCaptchaSiteKey"></script>
+
+    <script>
+        function onClick(e) {
+            e.preventDefault();
+            grecaptcha.ready(function () {
+                grecaptcha.execute('reCAPTCHA_site_key', { action: 'submit' }).then(function (token) {
+                    // Add your logic to submit to your backend server here.
+                });
+            });
+        }
+    </script>
+
+}
