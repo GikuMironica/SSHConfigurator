@@ -50,7 +50,7 @@ namespace SSHConfigurator.Services
 
             if (!string.IsNullOrEmpty(error)) 
             {
-                _logger.LogError(error);
+                //_logger.LogError(error);
                 return false ; 
             }
             if (output.Contains("0"))

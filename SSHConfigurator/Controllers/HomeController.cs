@@ -97,7 +97,7 @@ namespace SSHConfigurator.Controllers
                 if (!result.IsSuccessful)
                 {
                     // log the error
-                    _logger.LogError(result.ErrorMessage);
+                    //_logger.LogError(result.ErrorMessage);
                     ModelState.AddModelError(string.Empty, "Something went wrong...");
                     return View(uploadKeyViewModel);
                 }

@@ -24,12 +24,7 @@ namespace SSHConfigurator
                 {
                     config.AddJsonFile(Path.Combine(Environment.CurrentDirectory, "wwwroot", "scripts", "linux", "BashScripts.json"), optional: false, reloadOnChange: true);
                     config.AddJsonFile(Path.Combine(Environment.CurrentDirectory, "wwwroot", "scripts", "windows", "PowerShellScripts.json"), optional: false, reloadOnChange: true);
-                })
-                 .ConfigureLogging(logging =>
-                 {
-                     logging.ClearProviders();
-                 })
-                .UseNLog()
+                })                
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
