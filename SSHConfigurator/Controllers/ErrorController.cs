@@ -9,6 +9,11 @@ using System.Threading.Tasks;
 
 namespace SSHConfigurator.Controllers
 {
+    /// <summary>
+    /// This controller acts as a global exception handler.
+    /// After an unhandled error occurs in the system, 
+    /// the middleware redirects the request to an appropriate endpoint of this controller.
+    /// </summary>
     public class ErrorController : Controller
     {
         private readonly ILogger<ErrorController> logger;
@@ -18,6 +23,12 @@ namespace SSHConfigurator.Controllers
             this.logger = logger;
         }
 
+
+        /// <summary>
+        /// This endpoint handles the HTTP 404 error, and returns the appropriate view with a message to the user.
+        /// </summary>
+        /// <param name="statusCode"></param>
+        /// <returns></returns>
         [Route("Error/{statusCode}")]
         public IActionResult HttpStatusCodeHandler(int statusCode)
         {
@@ -35,6 +46,10 @@ namespace SSHConfigurator.Controllers
             return View("NotFound");
         }
 
+        /// <summary>
+        /// This endpoint handles the errors and returns a view with an appropriate message to the user.
+        /// </summary>
+        /// <returns></returns>
         [Route("Error")]
         [AllowAnonymous]
         public IActionResult Error()

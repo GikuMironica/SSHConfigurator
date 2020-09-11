@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace SSHConfigurator.Services
 {
+    /// <summary>
+    /// This service class contains the methods for interacting with Google Recaptcha in order to block the bots.
+    /// </summary>
     public class GoogleRecaptchaService
     {
         private RecaptchaSettings _recaptchaSettings;

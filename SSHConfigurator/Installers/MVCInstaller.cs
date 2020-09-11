@@ -19,6 +19,9 @@ using System.Threading.Tasks;
 
 namespace SSHConfigurator.Installers
 {
+    /// <summary>
+    /// This class configures the services related to the MVC framework and the app's request pipeline.
+    /// </summary>
     public class MVCInstaller : IInstaller
     {
         public void InstallServices(IServiceCollection services, IConfiguration configuration)

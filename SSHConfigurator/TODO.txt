@@ -1,3 +1,0 @@
-﻿1. Implement UploadKey functionality
-2. Implement Index Display VM pub key name
-3. Implement Delete Key functionality

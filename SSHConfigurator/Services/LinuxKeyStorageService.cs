@@ -11,6 +11,9 @@ using System.Threading.Tasks;
 
 namespace SSHConfigurator.Services
 {
+    /// <summary>
+    /// This service class implements the logic for manipulating the user's public key for Linux operating systems.
+    /// </summary>
     public class LinuxKeyStorageService : IKeyStorageService
     {
         private readonly KeyStorageScripts _ShellScripts;
@@ -25,7 +28,9 @@ namespace SSHConfigurator.Services
         }
 
         
-
+        /// <summary>
+        /// This method checks whether the user has already uploaded a public key.
+        /// </summary>
         public async Task<bool> HasKeyAsync(string Username)
         {            
             var process = new Process()
@@ -59,7 +64,9 @@ namespace SSHConfigurator.Services
             return true;
         }
 
-
+        /// <summary>
+        /// This method stores the public key in the appropriate location on the target machine.
+        /// </summary>
         public async Task<StoreKeyResult> StorePublicKeyAsync(string Keyname, string Username)
         {
             var process = new Process()
@@ -105,6 +112,10 @@ namespace SSHConfigurator.Services
             };
         }
 
+
+        /// <summary>
+        /// This method deletes the user's public key from the target machine if exists.
+        /// </summary>
         public async Task DeletePublicKeyAsync(string Username)
         {
             var process = new Process()

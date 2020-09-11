@@ -16,6 +16,9 @@ using System.Threading.Tasks;
 
 namespace SSHConfigurator.Installers
 {
+    /// <summary>
+    /// This class configures the services related to the LDAP authentication, authorization and the app's request pipeline.
+    /// </summary>
     public class LdapAuthenticationInstaller : IInstaller
     {
         public void InstallServices(IServiceCollection services, IConfiguration configuration)

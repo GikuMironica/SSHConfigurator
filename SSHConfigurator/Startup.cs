@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -13,6 +12,9 @@ using SSHConfigurator.Extensions;
 
 namespace SSHConfigurator
 {
+    /// <summary>
+    /// This class configures services and the app's request pipeline.
+    /// </summary>
     public class Startup
     {
         public Startup(IConfiguration configuration)

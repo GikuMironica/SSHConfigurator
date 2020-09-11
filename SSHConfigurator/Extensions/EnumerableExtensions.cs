@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace SSHConfigurator.Extensions
 {
+    /// <summary>
+    /// This static class provides an extension method for EnumerableExtensions class in order to create an array from a IEnumerable<T> 
+    /// </summary>
     public static class EnumerableExtensions
     {
         public static Collection<T> ToCollection<T>(this IEnumerable<T> source)
