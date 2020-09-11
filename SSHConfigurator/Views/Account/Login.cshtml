@@ -29,6 +29,7 @@
                     </label>
                 </div>
             </div>
+            <input hidden class="Token" asp-for="Token" />
             <button type="submit" class="btn btn-primary">Login</button>
         </form>
     </div>
@@ -37,15 +38,12 @@
 @section Scripts{
     <script src="https://www.google.com/recaptcha/api.js?render=@RecaptchaSettings.Value.ReCaptchaSiteKey"></script>
 
-    <script>
-        function onClick(e) {
-            e.preventDefault();
+    <script>        
             grecaptcha.ready(function () {
-                grecaptcha.execute('reCAPTCHA_site_key', { action: 'submit' }).then(function (token) {
-                    // Add your logic to submit to your backend server here.
+                grecaptcha.execute('@RecaptchaSettings.Value.ReCaptchaSiteKey', { action: 'submit' }).then(function (token) {
+                    $('.Token').val(token);
                 });
             });
-        }
-    </script>
+   </script>
 
 }

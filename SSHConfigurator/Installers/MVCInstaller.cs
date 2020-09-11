@@ -23,12 +23,14 @@ namespace SSHConfigurator.Installers
     {
         public void InstallServices(IServiceCollection services, IConfiguration configuration)
         {
-            // services
+            // SERVICES
             services.AddTransient<ILdapService, LdapService>();
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
+            services.AddTransient<GoogleRecaptchaService>();
 
 
+            // CONFIGURATIONS
             // Configure the implementation for the public key storage depending on the OS.
             var isLinux = RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
             if (isLinux)
@@ -41,7 +43,6 @@ namespace SSHConfigurator.Installers
                 services.AddSingleton<IKeyStorageService, WindowsKeyStorageService>();
                 services.Configure<KeyStorageScripts>(configuration.GetSection("PowerShellScripts"));
             }        
-
 
             // configure the username of the admin
             // It is required for moving the uploaded public key by the students from wwwroot folder to the correct folder.

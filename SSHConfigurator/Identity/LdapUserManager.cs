@@ -26,7 +26,7 @@ namespace SSHConfigurator.Identity
 
         public override async Task<bool> CheckPasswordAsync(THUMember user, string password)
         {
-            return true;
+            return await Task.FromResult(true);
         }
 
         public override Task<bool> HasPasswordAsync(THUMember user)
