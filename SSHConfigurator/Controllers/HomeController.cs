@@ -14,6 +14,7 @@ using SSHConfigurator.Domain;
 using SSHConfigurator.Models;
 using SSHConfigurator.Services;
 using SSHConfigurator.ViewModels;
+using Vereyon.Web;
 using ErrorViewModel = SSHConfigurator.ViewModels.ErrorViewModel;
 
 namespace SSHConfigurator.Controllers
@@ -25,15 +26,17 @@ namespace SSHConfigurator.Controllers
         private readonly SignInManager<THUMember> signInManager;
         private readonly IKeyStorageService keyStorageService;
         private readonly IWebHostEnvironment iHostingEnvironment;
+        private readonly GoogleRecaptchaService recaptchaService;
 
         public HomeController(ILogger<HomeController> logger, UserManager<THUMember> userManager, SignInManager<THUMember> signInManager,
-                              IKeyStorageService keyStorageService, IWebHostEnvironment IHostingEnvironment)
+                              IKeyStorageService keyStorageService, IWebHostEnvironment IHostingEnvironment, GoogleRecaptchaService recaptchaService)
         {
             _logger = logger;
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.keyStorageService = keyStorageService;
             iHostingEnvironment = IHostingEnvironment;
+            this.recaptchaService = recaptchaService;
         }
 
         [HttpGet]
@@ -44,14 +47,23 @@ namespace SSHConfigurator.Controllers
             {
                 UserName = User.Identity.Name,
                 HasKey =  IsExistent
-            };                    
-
+            };
             return View(UserData);
         }
             
         [HttpPost]
-        public async Task<IActionResult> DeleteKey()
+        public async Task<IActionResult> DeleteKey(HomeViewModel deleteViewModel)
         {
+            // Google Recaptcha Verification
+            var googleRecaptcha = await recaptchaService.ReceiveVerificationAsync(deleteViewModel.Token);
+
+            // If verification failed, sign out user.
+            if (!googleRecaptcha.Success)
+            {
+                await signInManager.SignOutAsync();
+                return RedirectToAction("login", "account");
+            }
+
             await keyStorageService.DeletePublicKeyAsync(User.Identity.Name);
             return RedirectToAction("Index");
         }
@@ -65,6 +77,15 @@ namespace SSHConfigurator.Controllers
         [HttpPost]
         public async Task<IActionResult> UploadKey(UploadKeyViewModel uploadKeyViewModel)
         {
+            // Google Recaptcha Verification
+            var googleRecaptcha = await recaptchaService.ReceiveVerificationAsync(uploadKeyViewModel.Token);
+
+            // If verification failed, sign out user.
+            if (!googleRecaptcha.Success)
+            {
+                await signInManager.SignOutAsync();
+                return RedirectToAction("login", "account");
+            }
             if (ModelState.IsValid)
             {
                 // temporarily store the key in the www/temp-keys folder
@@ -75,7 +96,9 @@ namespace SSHConfigurator.Controllers
 
                 if (!result.IsSuccessful)
                 {
-                    ModelState.AddModelError(string.Empty, result.ErrorMessage);
+                    // log the error
+                    _logger.LogError(result.ErrorMessage);
+                    ModelState.AddModelError(string.Empty, "Something went wrong...");
                     return View(uploadKeyViewModel);
                 }
                 // after file copied to the users .ssh folder in authorized_keys, delete key from temp folder

@@ -9,5 +9,6 @@ namespace SSHConfigurator.ViewModels
     {
         public string UserName { get; set; }
         public bool HasKey { get; set; }
+        public string Token { get; set; }
     }
 }
