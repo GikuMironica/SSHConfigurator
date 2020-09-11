@@ -42,7 +42,6 @@ namespace SSHConfigurator.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            throw new Exception();
             var IsExistent = await keyStorageService.HasKeyAsync(User.Identity.Name);
             var UserData = new HomeViewModel
             {
