@@ -1,0 +1,29 @@
+ldapsearch -D cn=traub,ou=Benutzer,dc=hs-ulm,dc=de -b ou=Benutzer,dc=hs-ulm,dc=de -W -h rz-peter.hs-ulm.de "(cn=traub)"
+
+
++-------------------------------+
+| i-linux-01 Ubuntu 18.04.4 LTS |
++-------------------------------+
+Last login: Tue Jul 14 22:34:12 2020 from 141.59.11.22
+mironica@i-linux-01:~$ ldapsearch -D cn=mironica,ou=Benutzer,dc=hs-ulm,dc=de -b ou=Benutzer,dc=hs-ulm,dc=de -W -h rz-peter.hs-ulm.de "(cn=mironica)"
+Enter LDAP Password:
+# extended LDIF
+#
+# LDAPv3
+# base <ou=Benutzer,dc=hs-ulm,dc=de> with scope subtree
+# filter: (cn=mironica)
+# requesting: ALL
+#
+
+# mironica, Benutzer, hs-ulm.de
+dn: CN=mironica,OU=Benutzer,DC=hs-ulm,DC=de
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: user
+cn: mironica
+sn: Mironica
+description: CTS6 Gheorghe Mironica
+givenName: Gheorghe
+generationQualifier: CTS6
+distinguishedName: CN=mironica,OU=Benutzer,DC=hs-ulm,DC=de

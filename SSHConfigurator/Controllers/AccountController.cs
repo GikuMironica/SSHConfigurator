@@ -32,7 +32,7 @@ namespace SSHConfigurator.Controllers
         public async Task<IActionResult> Login()
         {
             // clear the existing external cookie
-            await this.HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+            await this.HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);           
 
             return View();
         }
