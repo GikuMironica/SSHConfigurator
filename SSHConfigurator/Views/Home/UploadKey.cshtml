@@ -1,4 +1,6 @@
 ﻿@model SSHConfigurator.ViewModels.UploadKeyViewModel
+@using Microsoft.Extensions.Options
+@inject IOptions<SSHConfigurator.Options.RecaptchaSettings> RecaptchaSettings
 @{
     ViewData["Title"] = "Upload Key";
 }
@@ -22,15 +24,16 @@
                     </div>
                 </div>
             </div>
+            <input hidden class="Token" asp-for="Token" />
             <div class="row p-2 pt-3">
                 <div class="col">
                     <button type="submit" class="btn btn-success">Save</button>
                     <a asp-action="Index" class="btn btn-secondary">Cancel</a>
                 </div>
             </div>
-        </form> 
+        </form>
     </div>
- 
+
 
 </div>
 
@@ -43,5 +46,14 @@
             });
         }
         );
+    </script>
+    <script src="https://www.google.com/recaptcha/api.js?render=@RecaptchaSettings.Value.ReCaptchaSiteKey"></script>
+    <script>
+
+            grecaptcha.ready(function () {
+                grecaptcha.execute('@RecaptchaSettings.Value.ReCaptchaSiteKey', { action: 'submit' }).then(function (token) {
+                    $('.Token').val(token);
+                });
+            });
     </script>
 }

@@ -11,5 +11,7 @@ namespace SSHConfigurator.ViewModels
     {
         [Required]
         public IFormFile KeyFile { get; set; }
+        [Required]
+        public string Token { get; set; }
     }
 }
