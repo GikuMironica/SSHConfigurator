@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace SSHConfigurator.Models
 {
+    /// <summary>
+    /// This class serves as a model for the entity that's going to be retrieved from the LDAP server upon authentication.
+    /// </summary>
     public class THUMember : IdentityUser, ILdapEntry
     {        
         [NotMapped]

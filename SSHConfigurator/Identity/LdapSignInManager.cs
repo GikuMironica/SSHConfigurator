@@ -13,6 +13,10 @@ using System.Threading.Tasks;
 
 namespace SSHConfigurator.Identity
 {
+    /// <summary>
+    /// This class overrides the basic functionality of the SignInManager<T> from Identity Framework
+    /// in order to work along with LDAP authentication & authorization.
+    /// </summary>
     public class LdapSignInManager : SignInManager<THUMember>
     {
         private readonly IOptions<AllowedCourses> coursesOptions;

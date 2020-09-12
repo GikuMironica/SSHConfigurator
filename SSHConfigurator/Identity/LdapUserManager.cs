@@ -10,6 +10,10 @@ using System.Threading.Tasks;
 
 namespace SSHConfigurator.Identity
 {
+    /// <summary>
+    /// This class overrides the basic functionality of the UserManager<T> from Identity Framework
+    /// in order to work along with LDAP authentication & authorization.
+    /// </summary>
     public class LdapUserManager : UserManager<THUMember>
     {
         private readonly ILdapService ldapService;

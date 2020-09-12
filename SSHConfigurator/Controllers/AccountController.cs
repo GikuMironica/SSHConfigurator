@@ -13,7 +13,9 @@ using System.Threading.Tasks;
 
 namespace SSHConfigurator.Controllers
 {
-    
+    /// <summary>
+    /// This controller handles the authentication and authorization process. 
+    /// </summary>
     public class AccountController : Controller
     {
         private readonly LdapSignInManager signInManager;
@@ -27,6 +29,10 @@ namespace SSHConfigurator.Controllers
             this.recaptchaService = recaptchaService;
         }
 
+
+        /// <summary>
+        /// This endpoint returns the view with the login page.
+        /// </summary>
         [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> Login()
@@ -38,6 +44,11 @@ namespace SSHConfigurator.Controllers
         }
 
 
+        /// <summary>
+        /// This endpoint processes the uploaded form with the user's credentials.
+        /// As result, the user is either logged in and redirected to the home page or rejected.
+        /// </summary>
+        /// <param name="model">Contains the user's credentials and the Google Recaptcha token.</param>
         [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl)
@@ -80,7 +91,9 @@ namespace SSHConfigurator.Controllers
         }
 
 
-        
+        /// <summary>
+        /// This endpoint logs the user out of the system.
+        /// </summary>
         [HttpPost]
         public async Task<IActionResult> Logout()
         {

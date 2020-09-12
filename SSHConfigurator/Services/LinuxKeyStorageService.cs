@@ -11,21 +11,26 @@ using System.Threading.Tasks;
 
 namespace SSHConfigurator.Services
 {
+    /// <summary>
+    /// This service class implements the logic for manipulating the user's public key for Linux operating systems.
+    /// </summary>
     public class LinuxKeyStorageService : IKeyStorageService
     {
         private readonly KeyStorageScripts _ShellScripts;
-        private readonly SystemAdmin _admin;
+        private readonly SystemConfiguration _systemConfig;
         private readonly ILogger<LinuxKeyStorageService> _logger;
 
-        public LinuxKeyStorageService(IOptions<KeyStorageScripts> scripts, IOptions<SystemAdmin> admin, ILogger<LinuxKeyStorageService> logger)
+        public LinuxKeyStorageService(IOptions<KeyStorageScripts> scripts, IOptions<SystemConfiguration> systemConfig, ILogger<LinuxKeyStorageService> logger)
         {
             _ShellScripts = scripts.Value;
-            _admin = admin.Value;
+            _systemConfig = systemConfig.Value;
             _logger = logger;
         }
 
         
-
+        /// <summary>
+        /// This method checks whether the user has already uploaded a public key.
+        /// </summary>
         public async Task<bool> HasKeyAsync(string Username)
         {            
             var process = new Process()
@@ -59,7 +64,9 @@ namespace SSHConfigurator.Services
             return true;
         }
 
-
+        /// <summary>
+        /// This method stores the public key in the appropriate location on the target machine.
+        /// </summary>
         public async Task<StoreKeyResult> StorePublicKeyAsync(string Keyname, string Username)
         {
             var process = new Process()
@@ -75,19 +82,19 @@ namespace SSHConfigurator.Services
                 }
             };
             process.Start();
-            await process.StandardInput.WriteLineAsync(string.Format(_ShellScripts.StoreKeyScript, Username, Keyname, _admin.AdminUsername));
+            await process.StandardInput.WriteLineAsync(string.Format(_ShellScripts.StoreKeyScript, Username, Keyname, _systemConfig.AdminUsername, _systemConfig.AccountLifeTime));
             process.StandardInput.Close();
             string output = await process.StandardOutput.ReadLineAsync();
             string error = await process.StandardError.ReadToEndAsync();
             process.WaitForExit();
-            process.Close();
+            process.Close();                               
 
             if (!string.IsNullOrEmpty(error))
             {
                 return new StoreKeyResult
                 {
                     IsSuccessful = false,
-                    ErrorMessage = error + "\n "+ string.Format(_ShellScripts.StoreKeyScript, Username, Keyname, _admin.AdminUsername)
+                    ErrorMessage = error + "\n "+ string.Format(_ShellScripts.StoreKeyScript, Username, Keyname, _systemConfig.AdminUsername, _systemConfig.AccountLifeTime)
                 };
             }
             if (!string.IsNullOrEmpty(output))
@@ -105,6 +112,10 @@ namespace SSHConfigurator.Services
             };
         }
 
+
+        /// <summary>
+        /// This method deletes the user's public key from the target machine if exists.
+        /// </summary>
         public async Task DeletePublicKeyAsync(string Username)
         {
             var process = new Process()

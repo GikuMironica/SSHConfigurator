@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 namespace SSHConfigurator.Models
 {
+    
     public class LdapEntry : ILdapEntry
     {
         public string ObjectSid { get; set; }

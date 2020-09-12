@@ -19,6 +19,9 @@ using System.Threading.Tasks;
 
 namespace SSHConfigurator.Installers
 {
+    /// <summary>
+    /// This class configures the services related to the MVC framework and the app's request pipeline.
+    /// </summary>
     public class MVCInstaller : IInstaller
     {
         public void InstallServices(IServiceCollection services, IConfiguration configuration)
@@ -46,7 +49,7 @@ namespace SSHConfigurator.Installers
 
             // configure the username of the admin
             // It is required for moving the uploaded public key by the students from wwwroot folder to the correct folder.
-            services.Configure<SystemAdmin>(configuration.GetSection("SystemAdmin"));
+            services.Configure<SystemConfiguration>(configuration.GetSection("SystemConfiguration"));
 
             // configure google recaptcha credentials with Options Pattern
             services.Configure<RecaptchaSettings>(configuration.GetSection("GoogleReCaptcha"));
