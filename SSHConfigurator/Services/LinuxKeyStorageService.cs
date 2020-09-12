@@ -17,13 +17,13 @@ namespace SSHConfigurator.Services
     public class LinuxKeyStorageService : IKeyStorageService
     {
         private readonly KeyStorageScripts _ShellScripts;
-        private readonly SystemAdmin _admin;
+        private readonly SystemConfiguration _systemConfig;
         private readonly ILogger<LinuxKeyStorageService> _logger;
 
-        public LinuxKeyStorageService(IOptions<KeyStorageScripts> scripts, IOptions<SystemAdmin> admin, ILogger<LinuxKeyStorageService> logger)
+        public LinuxKeyStorageService(IOptions<KeyStorageScripts> scripts, IOptions<SystemConfiguration> systemConfig, ILogger<LinuxKeyStorageService> logger)
         {
             _ShellScripts = scripts.Value;
-            _admin = admin.Value;
+            _systemConfig = systemConfig.Value;
             _logger = logger;
         }
 
@@ -82,19 +82,19 @@ namespace SSHConfigurator.Services
                 }
             };
             process.Start();
-            await process.StandardInput.WriteLineAsync(string.Format(_ShellScripts.StoreKeyScript, Username, Keyname, _admin.AdminUsername));
+            await process.StandardInput.WriteLineAsync(string.Format(_ShellScripts.StoreKeyScript, Username, Keyname, _systemConfig.AdminUsername, _systemConfig.AccountLifeTime));
             process.StandardInput.Close();
             string output = await process.StandardOutput.ReadLineAsync();
             string error = await process.StandardError.ReadToEndAsync();
             process.WaitForExit();
-            process.Close();
+            process.Close();                               
 
             if (!string.IsNullOrEmpty(error))
             {
                 return new StoreKeyResult
                 {
                     IsSuccessful = false,
-                    ErrorMessage = error + "\n "+ string.Format(_ShellScripts.StoreKeyScript, Username, Keyname, _admin.AdminUsername)
+                    ErrorMessage = error + "\n "+ string.Format(_ShellScripts.StoreKeyScript, Username, Keyname, _systemConfig.AdminUsername, _systemConfig.AccountLifeTime)
                 };
             }
             if (!string.IsNullOrEmpty(output))
