@@ -20,6 +20,7 @@ namespace SSHConfigurator.Services
         /// </summary>
         public Task DeletePublicKeyAsync(string Username)
         {
+            //return Task.CompletedTask;
             throw new NotImplementedException();
         }
 

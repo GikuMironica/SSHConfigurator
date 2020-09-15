@@ -31,6 +31,7 @@ namespace SSHConfigurator.Controllers
         private readonly IKeyStorageService keyStorageService;
         private readonly IWebHostEnvironment iHostingEnvironment;
         private readonly GoogleRecaptchaService recaptchaService;
+        // private readonly LdapService;
 
         public HomeController(ILogger<HomeController> logger, UserManager<THUMember> userManager, SignInManager<THUMember> signInManager,
                               IKeyStorageService keyStorageService, IWebHostEnvironment IHostingEnvironment, GoogleRecaptchaService recaptchaService)
@@ -41,6 +42,7 @@ namespace SSHConfigurator.Controllers
             this.keyStorageService = keyStorageService;
             iHostingEnvironment = IHostingEnvironment;
             this.recaptchaService = recaptchaService;
+            // LdapService = new LdapService(); -- tight coupling
         }
 
 
