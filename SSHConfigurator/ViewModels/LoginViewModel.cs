@@ -9,7 +9,8 @@ namespace SSHConfigurator.ViewModels
     public class LoginViewModel
     {
         [Required]
-        public string Email { get; set; }
+        [Display(Name = "Username")]
+        public string UserName { get; set; }
 
         [Required]
         [DataType(DataType.Password)]

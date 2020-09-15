@@ -87,19 +87,21 @@ namespace SSHConfigurator.Services
 
         private THUMember CreateUserFromAttributes(string distinguishedName, LdapAttributeSet attributeSet)
         {
-            var ldapUser = new THUMember();
+            var ldapUser = new THUMember
+            {
+                ObjectSid = attributeSet.getAttribute("objectSid")?.StringValue,
+                ObjectGuid = attributeSet.getAttribute("objectGUID")?.StringValue,
+                ObjectCategory = attributeSet.getAttribute("objectCategory")?.StringValue,
+                ObjectClass = attributeSet.getAttribute("objectClass")?.StringValue,
+                MemberOf = attributeSet.getAttribute("memberOf")?.StringValueArray.ToList(),
+                CommonName = attributeSet.getAttribute("cn")?.StringValue,
+                UserName = attributeSet.getAttribute("name")?.StringValue,
+                Name = attributeSet.getAttribute("name")?.StringValue,
+                DistinguishedName = attributeSet.getAttribute("distinguishedName")?.StringValue ?? distinguishedName,
+                DisplayName = attributeSet.getAttribute("displayName")?.StringValue,
+                Email = attributeSet.getAttribute("mail")?.StringValue
+            };
 
-            ldapUser.ObjectSid = attributeSet.getAttribute("objectSid")?.StringValue;
-            ldapUser.ObjectGuid = attributeSet.getAttribute("objectGUID")?.StringValue;
-            ldapUser.ObjectCategory = attributeSet.getAttribute("objectCategory")?.StringValue;
-            ldapUser.ObjectClass = attributeSet.getAttribute("objectClass")?.StringValue;
-            ldapUser.MemberOf = attributeSet.getAttribute("memberOf")?.StringValueArray.ToList();
-            ldapUser.CommonName = attributeSet.getAttribute("cn")?.StringValue;
-            ldapUser.UserName = attributeSet.getAttribute("name")?.StringValue;
-            ldapUser.Name = attributeSet.getAttribute("name")?.StringValue;
-            ldapUser.DistinguishedName = attributeSet.getAttribute("distinguishedName")?.StringValue ?? distinguishedName;
-            ldapUser.DisplayName = attributeSet.getAttribute("displayName")?.StringValue;
-            ldapUser.Email = attributeSet.getAttribute("mail")?.StringValue;
 
             return ldapUser;
         }

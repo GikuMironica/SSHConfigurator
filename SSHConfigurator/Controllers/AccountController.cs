@@ -3,12 +3,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SSHConfigurator.Identity;
-using SSHConfigurator.Models;
 using SSHConfigurator.Services;
 using SSHConfigurator.ViewModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SSHConfigurator.Controllers
@@ -49,10 +45,12 @@ namespace SSHConfigurator.Controllers
         /// As result, the user is either logged in and redirected to the home page or rejected.
         /// </summary>
         /// <param name="model">Contains the user's credentials and the Google Recaptcha token.</param>
+        /// <param name="returnUrl">Contains the initially requested page's URL</param>
         [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl)
         {
+            
             // Google Recaptcha Verification
             var googleRecaptcha = await recaptchaService.ReceiveVerificationAsync(model.Token);
 
@@ -62,19 +60,23 @@ namespace SSHConfigurator.Controllers
                 return View();
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
+                return View(model);
+            }
+
+            var result = await signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, false);
                                 
                 if (result.Succeeded)
                 {
+                    // the following if else block prevents Open-Redirect Attacks.
                     if (!string.IsNullOrEmpty(returnUrl))
                     {
                         return LocalRedirect(returnUrl);
                     }
                     else
                     {
-                        return RedirectToAction("index", "home");
+                        return RedirectToAction("Index", "home");
                     }
                 }
                 else if (result.IsNotAllowed)
@@ -83,10 +85,7 @@ namespace SSHConfigurator.Controllers
                     return View(model);
                 }
 
-                ModelState.AddModelError(string.Empty, _invalidLoginMessage);
-
-            }
-
+            ModelState.AddModelError(string.Empty, _invalidLoginMessage);
             return View(model);
         }
 
