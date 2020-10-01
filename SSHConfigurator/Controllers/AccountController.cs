@@ -15,14 +15,14 @@ namespace SSHConfigurator.Controllers
     public class AccountController : Controller
     {
         private readonly LdapSignInManager signInManager;
-        private readonly GoogleRecaptchaService recaptchaService;
+        private readonly IRecaptchaService _recaptchaService;
         private readonly string _notAllowedLoginMessage = "You must be enrolled in a specific course to access this platform";
         private readonly string _invalidLoginMessage = "Invalid Login Attempt";
 
-        public AccountController( LdapSignInManager signInManager, GoogleRecaptchaService recaptchaService)
+        public AccountController(LdapSignInManager signInManager, IRecaptchaService recaptchaService)
         {
             this.signInManager = signInManager;
-            this.recaptchaService = recaptchaService;
+            this._recaptchaService = recaptchaService;
         }
 
 
@@ -52,7 +52,7 @@ namespace SSHConfigurator.Controllers
         {
             
             // Google Recaptcha Verification
-            var googleRecaptcha = await recaptchaService.ReceiveVerificationAsync(model.Token);
+            var googleRecaptcha = await _recaptchaService.ReceiveVerificationAsync(model.Token);
 
             if (!googleRecaptcha.Success)
             {
@@ -67,23 +67,23 @@ namespace SSHConfigurator.Controllers
 
             var result = await signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, false);
                                 
-                if (result.Succeeded)
+            if (result.Succeeded)
+            { 
+                // the following if else block prevents Open-Redirect Attacks.
+                if (!string.IsNullOrEmpty(returnUrl))
                 {
-                    // the following if else block prevents Open-Redirect Attacks.
-                    if (!string.IsNullOrEmpty(returnUrl))
-                    {
-                        return LocalRedirect(returnUrl);
-                    }
-                    else
-                    {
-                        return RedirectToAction("Index", "home");
-                    }
+                    return LocalRedirect(returnUrl);
                 }
-                else if (result.IsNotAllowed)
+                else
                 {
-                    ModelState.AddModelError(string.Empty, _notAllowedLoginMessage);
-                    return View(model);
+                    return RedirectToAction("Index", "home");
                 }
+            }
+            else if (result.IsNotAllowed)
+            {
+                ModelState.AddModelError(string.Empty, _notAllowedLoginMessage);
+                return View(model);
+            }
 
             ModelState.AddModelError(string.Empty, _invalidLoginMessage);
             return View(model);

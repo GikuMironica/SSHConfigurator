@@ -2,30 +2,29 @@
 using Newtonsoft.Json;
 using SSHConfigurator.Options;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using SSHConfigurator.Domain;
 
 namespace SSHConfigurator.Services
 {
     /// <summary>
     /// This service class contains the methods for interacting with Google Recaptcha in order to block the bots.
     /// </summary>
-    public class GoogleRecaptchaService
+    public class GoogleRecaptchaService : IRecaptchaService
     {
-        private RecaptchaSettings _recaptchaSettings;
+        private readonly RecaptchaSettings _recaptchaSettings;
 
         public GoogleRecaptchaService(IOptions<RecaptchaSettings> recaptchaSettings)
         {
             _recaptchaSettings = recaptchaSettings.Value;
         }
 
-        public virtual async Task<GoogleResponse> ReceiveVerificationAsync(string _Token)
+        public async Task<RecaptchaResponse> ReceiveVerificationAsync(string Token)
         {
             GoogleReCaptchaData data = new GoogleReCaptchaData
             {
-                Response = _Token,
+                Response = Token,
                 Secret = _recaptchaSettings.ReCaptchaSecretKey
             };
 
@@ -47,9 +46,8 @@ namespace SSHConfigurator.Services
         public string Secret { get; set; }
     }
 
-    public class GoogleResponse
+    public class GoogleResponse : RecaptchaResponse
     {
-        public bool Success { get; set; }
         public double Score { get; set; }
         public string Action { get; set; }
         public DateTime Challenge_Ts { get; set; }

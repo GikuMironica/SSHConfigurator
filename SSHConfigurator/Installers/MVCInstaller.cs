@@ -13,7 +13,7 @@ namespace SSHConfigurator.Installers
         public void InstallServices(IServiceCollection services, IConfiguration configuration)
         {
             
-            // Configure MVC, require user to be logged in to use app
+            // Configure MVC --------------------------------------------------------------------------------------------------------
             services.AddControllersWithViews(options => {
                 var policy = new AuthorizationPolicyBuilder()                                              
                     .RequireAuthenticatedUser()

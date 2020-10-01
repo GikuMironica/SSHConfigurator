@@ -44,7 +44,7 @@ namespace SSHConfigurator
             else
             {
                 app.UseStatusCodePagesWithRedirects("/Error/{0}");
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
             app.UseHttpsRedirection();

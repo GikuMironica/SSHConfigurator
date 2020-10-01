@@ -24,7 +24,7 @@ namespace SSHConfigurator.Installers
         public void InstallServices(IServiceCollection services, IConfiguration configuration)
         {
 
-            // LDAP-Authentication configurations
+            // LDAP Directory & Authentication settings --------------------------------------------------------------------------------------------------------------
             services.Configure<LdapSettings>(configuration.GetSection("LdapSettings"));
             services.AddDbContext<DataContext>(options => options.UseInMemoryDatabase("testdb"));
             services.AddIdentity<THUMember, IdentityRole>()
@@ -32,9 +32,7 @@ namespace SSHConfigurator.Installers
             .AddSignInManager<LdapSignInManager>()
             .AddEntityFrameworkStores<DataContext>()
             .AddDefaultTokenProviders();
-
-            // Allowed Courses Configuration
-            services.Configure<AllowedCourses>(configuration.GetSection("Courses"));
+                        
         }
     }
 }

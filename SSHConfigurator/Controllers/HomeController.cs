@@ -26,17 +26,17 @@ namespace SSHConfigurator.Controllers
         private readonly SignInManager<THUMember> signInManager;
         private readonly IKeyStorageService keyStorageService;
         private readonly IWebHostEnvironment iHostingEnvironment;
-        private readonly GoogleRecaptchaService recaptchaService;
+        private readonly IRecaptchaService _recaptchaService;
 
         public HomeController(ILogger<HomeController> logger, UserManager<THUMember> userManager, SignInManager<THUMember> signInManager,
-                              IKeyStorageService keyStorageService, IWebHostEnvironment hostingEnvironment, GoogleRecaptchaService recaptchaService)
+                              IKeyStorageService keyStorageService, IWebHostEnvironment hostingEnvironment, IRecaptchaService recaptchaService)
         {
             _logger = logger;
             this.userManager = userManager;
             this.signInManager = signInManager;
             this.keyStorageService = keyStorageService;
             iHostingEnvironment = hostingEnvironment;
-            this.recaptchaService = recaptchaService;
+            this._recaptchaService = recaptchaService;
             
         }
 
@@ -65,7 +65,7 @@ namespace SSHConfigurator.Controllers
         public async Task<IActionResult> DeleteKey(HomeViewModel deleteViewModel)
         {
             // Google Recaptcha Verification
-            var googleRecaptcha = await recaptchaService.ReceiveVerificationAsync(deleteViewModel.Token);
+            var googleRecaptcha = await _recaptchaService.ReceiveVerificationAsync(deleteViewModel.Token);
 
             // If verification failed, sign out user.
             if (!googleRecaptcha.Success)
@@ -97,7 +97,7 @@ namespace SSHConfigurator.Controllers
         public async Task<IActionResult> UploadKey(UploadKeyViewModel uploadKeyViewModel)
         {
             // Google Recaptcha Verification
-            var googleRecaptcha = await recaptchaService.ReceiveVerificationAsync(uploadKeyViewModel.Token);
+            var googleRecaptcha = await _recaptchaService.ReceiveVerificationAsync(uploadKeyViewModel.Token);
 
             // If verification failed, sign out user.
             if (!googleRecaptcha.Success)
@@ -129,12 +129,6 @@ namespace SSHConfigurator.Controllers
             return View();            
         }
 
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-        }
 
         /// <summary>
         /// This method temporarily stores the uploaded public key in the www folder. 

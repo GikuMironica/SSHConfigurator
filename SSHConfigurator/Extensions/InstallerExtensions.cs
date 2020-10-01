@@ -2,9 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using SSHConfigurator.Installers;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace SSHConfigurator.Extensions
 {
@@ -13,7 +11,7 @@ namespace SSHConfigurator.Extensions
         // Extension method for IServiceCollection 
         public static void InstallServicesInAssembly(this IServiceCollection services, IConfiguration configuration)
         {
-            // fetch all classes implementing IInstaller
+            // enumerate all classes implementing IInstaller, instantiate them
             var installers = typeof(Startup).Assembly.ExportedTypes.Where(x =>
                 typeof(IInstaller).IsAssignableFrom(x) && !x.IsInterface &&
                 !x.IsAbstract).Select(Activator.CreateInstance).Cast<IInstaller>().ToList();
