@@ -38,7 +38,7 @@ namespace SSHConfigurator.Controllers
             {
                 case 404:
                     ViewBag.ErrorMessage = "Sorry, the resource you requested could not be found";
-                    //logger.LogWarning($"404 Error Occured. Path = {statusCodeResult.OriginalPath}" + $"and QueryString ={statusCodeResult.OriginalQueryString}");
+                    logger.LogWarning($"404 Error Occured. Path = {statusCodeResult.OriginalPath}" + $"and QueryString ={statusCodeResult.OriginalQueryString}");
                     break;
 
             }
@@ -55,7 +55,7 @@ namespace SSHConfigurator.Controllers
         public IActionResult Error()
         {
             var exceptionDetails = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
-            // logger.LogError($"The path {exceptionDetails.Path} threw an exception {exceptionDetails.Error} ");
+            logger.LogError($"The path {exceptionDetails.Path} threw an exception {exceptionDetails.Error} ");
             return View("Error");
         }
     }
