@@ -33,7 +33,6 @@
 @section Scripts{
     <script src="https://www.google.com/recaptcha/api.js?render=@RecaptchaSettings.Value.ReCaptchaSiteKey"></script>
     <script>
-
             grecaptcha.ready(function () {
                 grecaptcha.execute('@RecaptchaSettings.Value.ReCaptchaSiteKey', { action: 'submit' }).then(function (token) {
                     $('.Token').val(token);

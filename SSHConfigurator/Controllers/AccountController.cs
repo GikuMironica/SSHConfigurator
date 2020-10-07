@@ -33,7 +33,6 @@ namespace SSHConfigurator.Controllers
         [HttpGet]
         public async Task<IActionResult> Login()
         {
-            throw new System.Exception();
             // clear the existing external cookie
             await this.HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);           
 
@@ -70,7 +69,7 @@ namespace SSHConfigurator.Controllers
                                 
             if (result.Succeeded)
             { 
-                // the following if else block prevents Open-Redirect Attacks.
+                // the following if-else block prevents Open-Redirect Attacks.
                 if (!string.IsNullOrEmpty(returnUrl))
                 {
                     return LocalRedirect(returnUrl);

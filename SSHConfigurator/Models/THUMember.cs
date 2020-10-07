@@ -26,9 +26,6 @@ namespace SSHConfigurator.Models
         public string ObjectClass { get; set; }
 
         [NotMapped]
-        public string Password { get; set; }
-
-        [NotMapped]
         public string Name { get; set; }
 
         [NotMapped]
@@ -42,5 +39,6 @@ namespace SSHConfigurator.Models
 
         [NotMapped]
         public List<string> MemberOf { get; set; }
+
     }
 }

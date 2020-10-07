@@ -1,0 +1,5 @@
+[Paths]
+Prefix = ./106.4.368
+Binaries = .
+LibraryExecutables = .
+Qml2Imports = .
