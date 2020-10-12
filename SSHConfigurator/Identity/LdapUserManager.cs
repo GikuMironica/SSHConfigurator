@@ -38,15 +38,15 @@ namespace SSHConfigurator.Identity
             return Task.FromResult(true);
         }
 
-        public override Task<THUMember> FindByNameAsync(string userName)
-        {
-            return Task.FromResult(this.ldapService.GetUserByUserName(userName, null));
-        }
-
         public Task<THUMember> FindByNameAsync(string userName, string password)
         {
             return Task.FromResult(this.ldapService.GetUserByUserName(userName, password));
         }
+
+        /*public override Task<THUMember> FindByNameAsync(string userName)
+       {
+           return Task.FromResult(this.ldapService.GetUserByUserName(userName, null));
+       }*/
     }
 }
 

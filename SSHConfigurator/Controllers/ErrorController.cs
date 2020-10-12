@@ -30,7 +30,7 @@ namespace SSHConfigurator.Controllers
         /// <param name="statusCode"></param>
         /// <returns></returns>
         [Route("Error/{statusCode}")]
-        public IActionResult HttpStatusCodeHandler(int statusCode)
+        public async Task<IActionResult> HttpStatusCodeHandler(int statusCode)
         {
             var statusCodeResult = HttpContext.Features.Get<IStatusCodeReExecuteFeature>();
 
@@ -52,7 +52,7 @@ namespace SSHConfigurator.Controllers
         /// <returns></returns>
         [Route("Error")]
         [AllowAnonymous]
-        public IActionResult Error()
+        public async Task<IActionResult> Error()
         {
             var exceptionDetails = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
             logger.LogError($"The path {exceptionDetails.Path} threw an exception {exceptionDetails.Error} ");
