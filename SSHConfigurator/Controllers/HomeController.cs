@@ -52,7 +52,7 @@ namespace SSHConfigurator.Controllers
                 UserName = User.Identity.Name,
                 HasKey =  isExistent
             };
-
+            // throw new Exception();
             return View(userData);
         }
             
