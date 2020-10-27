@@ -1,8 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -25,7 +22,7 @@ namespace SSHConfigurator
         public static void Main(string[] args)
         {
             var config = new ConfigurationBuilder()
-                .SetBasePath(System.IO.Directory.GetCurrentDirectory())
+                .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("NLog.json", optional: true, reloadOnChange: true).Build();
             LogManager.Configuration = new NLogLoggingConfiguration(config.GetSection("NLog"));
 
