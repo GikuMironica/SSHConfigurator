@@ -2,7 +2,7 @@
 <br>
 
 <ul>
-  <li><h5> This is a 3 tier application with a small tweak. In the 3rd tier, the university's LDAP server acts as the persistence layer and substitutes the usual database. The main purpose of this application is to offer an intuitive interface to the students of Technische Hochschule Ulm for setting up an SSH public key on one of the available Linux servers. Only the students of specific courses are able to access this application.</h5></li>
+  <li><h5> The main purpose of this application is to offer an intuitive interface to the students of Technische Hochschule Ulm for setting up an SSH public key on one of the available Linux servers. Only the students of specific courses are able to access this application.</h5></li>
 </ul>
 
 
