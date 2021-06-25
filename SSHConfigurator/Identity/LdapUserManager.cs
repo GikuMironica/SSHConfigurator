@@ -5,7 +5,6 @@ using SSHConfigurator.Models;
 using SSHConfigurator.Services;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SSHConfigurator.Identity
@@ -16,7 +15,7 @@ namespace SSHConfigurator.Identity
     /// </summary>
     public class LdapUserManager : UserManager<THUMember>
     {
-        private readonly ILdapService ldapService;
+        private readonly ILdapService _ldapService;
 
         public LdapUserManager(ILdapService ldapService, IUserStore<THUMember> store, IOptions<IdentityOptions> optionsAccessor,
             IPasswordHasher<THUMember> passwordHasher, IEnumerable<IUserValidator<THUMember>> userValidators,
@@ -25,7 +24,7 @@ namespace SSHConfigurator.Identity
             : base (store, optionsAccessor, passwordHasher, userValidators, passwordValidators,
                 keyNormalizer, errors, services, logger)
         {
-            this.ldapService = ldapService;
+            this._ldapService = ldapService;
         }
 
         public override async Task<bool> CheckPasswordAsync(THUMember user, string password)
@@ -40,7 +39,7 @@ namespace SSHConfigurator.Identity
 
         public Task<THUMember> FindByNameAsync(string userName, string password)
         {
-            return Task.FromResult(this.ldapService.GetUserByUserName(userName, password));
+            return Task.FromResult(this._ldapService.GetUserByUserName(userName, password));
         }
 
         /*public override Task<THUMember> FindByNameAsync(string userName)

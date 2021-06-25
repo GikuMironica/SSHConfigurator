@@ -16,11 +16,11 @@ namespace SSHConfigurator.Controllers
     /// </summary>
     public class ErrorController : Controller
     {
-        private readonly ILogger<ErrorController> logger;
+        private readonly ILogger<ErrorController> _logger;
 
         public ErrorController(ILogger<ErrorController> logger)
         {
-            this.logger = logger;
+            _logger = logger;
         }
 
 
@@ -38,7 +38,7 @@ namespace SSHConfigurator.Controllers
             {
                 case 404:
                     ViewBag.ErrorMessage = "Sorry, the resource you requested could not be found";
-                    logger.LogWarning($"404 Error Occured. Path = {statusCodeResult.OriginalPath}" + $"and QueryString ={statusCodeResult.OriginalQueryString}");
+                    _logger.LogWarning($"404 Error Occured. Path = {statusCodeResult.OriginalPath}" + $"and QueryString ={statusCodeResult.OriginalQueryString}");
                     break;
 
             }
@@ -55,7 +55,7 @@ namespace SSHConfigurator.Controllers
         public async Task<IActionResult> Error()
         {
             var exceptionDetails = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
-            logger.LogError($"The path {exceptionDetails.Path} threw an exception {exceptionDetails.Error} ");
+            _logger.LogError($"The path {exceptionDetails.Path} threw an exception {exceptionDetails.Error} ");
             return View("Error");
         }
     }

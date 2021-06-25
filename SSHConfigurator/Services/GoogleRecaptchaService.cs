@@ -20,15 +20,15 @@ namespace SSHConfigurator.Services
             _recaptchaSettings = recaptchaSettings.Value;
         }
 
-        public async Task<RecaptchaResponse> ReceiveVerificationAsync(string Token)
+        public async Task<RecaptchaResponse> ReceiveVerificationAsync(string token)
         {
-            GoogleReCaptchaData data = new GoogleReCaptchaData
+            var data = new GoogleReCaptchaData
             {
-                Response = Token,
+                Response = token,
                 Secret = _recaptchaSettings.ReCaptchaSecretKey
             };
 
-            HttpClient client = new HttpClient();
+            var client = new HttpClient();
 
             var response = await client.GetStringAsync($"https://www.google.com/recaptcha/api/siteverify?secret={data.Secret}&response={data.Response}");
 

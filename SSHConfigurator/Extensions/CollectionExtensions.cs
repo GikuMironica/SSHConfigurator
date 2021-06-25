@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace SSHConfigurator.Extensions
 {
     /// <summary>
-    /// This static class provides an extension method for CollectionExtensions class in orrder to append a list of elements rather than a single element.
+    /// This static class provides an extension method for CollectionExtensions class in order to append a list of elements rather than a single element.
     /// </summary>
     public static class CollectionExtensions
     {

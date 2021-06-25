@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
@@ -21,20 +20,18 @@ namespace SSHConfigurator.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly UserManager<THUMember> userManager;
-        private readonly SignInManager<THUMember> signInManager;
-        private readonly IKeyStorageService keyStorageService;
-        private readonly IWebHostEnvironment iHostingEnvironment;
+        private readonly SignInManager<THUMember> _signInManager;
+        private readonly IKeyStorageService _keyStorageService;
+        private readonly IWebHostEnvironment _iHostingEnvironment;
         private readonly IRecaptchaService _recaptchaService;
 
-        public HomeController(ILogger<HomeController> logger, UserManager<THUMember> userManager, SignInManager<THUMember> signInManager,
+        public HomeController(ILogger<HomeController> logger, SignInManager<THUMember> signInManager,
                               IKeyStorageService keyStorageService, IWebHostEnvironment hostingEnvironment, IRecaptchaService recaptchaService)
         {
             _logger = logger;
-            this.userManager = userManager;
-            this.signInManager = signInManager;
-            this.keyStorageService = keyStorageService;
-            iHostingEnvironment = hostingEnvironment;
+            this._signInManager = signInManager;
+            this._keyStorageService = keyStorageService;
+            _iHostingEnvironment = hostingEnvironment;
             this._recaptchaService = recaptchaService;
             
         }
@@ -46,7 +43,7 @@ namespace SSHConfigurator.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var isExistent = await keyStorageService.HasKeyAsync(User.Identity.Name);
+            var isExistent = await _keyStorageService.HasKeyAsync(User.Identity.Name);
             var userData = new HomeViewModel
             {
                 UserName = User.Identity.Name,
@@ -69,11 +66,11 @@ namespace SSHConfigurator.Controllers
             // If verification failed, sign out user.
             if (!googleRecaptcha.Success)
             {
-                await signInManager.SignOutAsync();
+                await _signInManager.SignOutAsync();
                 return RedirectToAction("login", "account");
             }
 
-            await keyStorageService.DeletePublicKeyAsync(User.Identity.Name);
+            await _keyStorageService.DeletePublicKeyAsync(User.Identity.Name);
             return RedirectToAction("Index");
         }
 
@@ -101,31 +98,30 @@ namespace SSHConfigurator.Controllers
             // If verification failed, sign out user.
             if (!googleRecaptcha.Success)
             {
-                await signInManager.SignOutAsync();
+                await _signInManager.SignOutAsync();
                 return RedirectToAction("login", "account");
             }
-            if (ModelState.IsValid)
+
+            if (!ModelState.IsValid) return View();
+
+            // temporarily store the key in the www/temp-keys folder
+            var key = await StoreKeyAtTempLocationAsync(uploadKeyViewModel.KeyFile, User.Identity.Name);
+
+            // call a script to delete the existing key if exists, and store the new key. 
+            var result = await _keyStorageService.StorePublicKeyAsync(key.Keyname , User.Identity.Name);
+
+            if (!result.IsSuccessful)
             {
-                // temporarily store the key in the www/temp-keys folder
-                var key = await StoreKeyAtTempLocationAsync(uploadKeyViewModel.KeyFile, User.Identity.Name);
-
-                // call a script to delete the existing key if exists, and store the new key. 
-                var result = await keyStorageService.StorePublicKeyAsync(key.Keyname , User.Identity.Name);
-
-                if (!result.IsSuccessful)
-                {
-                    // log the error
-                    _logger.LogError(result.ErrorMessage);
-                    ModelState.AddModelError(string.Empty, "Something went wrong...");
-                    return View(uploadKeyViewModel);
-                }
-                // after file copied to the users .ssh folder in authorized_keys, delete key from temp folder
-                if (System.IO.File.Exists(key.Keypath))
-                    System.IO.File.Delete(key.Keypath);
-
-                return RedirectToAction("Index");
+                // log the error
+                _logger.LogError(result.ErrorMessage);
+                ModelState.AddModelError(string.Empty, "Something went wrong...");
+                return View(uploadKeyViewModel);
             }
-            return View();            
+            // after file copied to the users .ssh folder in authorized_keys, delete key from temp folder
+            if (System.IO.File.Exists(key.Keypath))
+                System.IO.File.Delete(key.Keypath);
+
+            return RedirectToAction("Index");
         }
 
 
@@ -136,13 +132,11 @@ namespace SSHConfigurator.Controllers
         /// <param name="username">The username of the current user.</param>
         private async Task<KeyData> StoreKeyAtTempLocationAsync(IFormFile key, string username)
         {
-            string uploadsFolder = Path.Combine(iHostingEnvironment.WebRootPath, "temp-keys");
-            string uniqueFileName = Guid.NewGuid().ToString() + "_" + username;
-            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await key.CopyToAsync(stream);
-            }
+            var uploadsFolder = Path.Combine(_iHostingEnvironment.WebRootPath, "temp-keys");
+            var uniqueFileName = Guid.NewGuid().ToString() + "_" + username;
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+            await using var stream = new FileStream(filePath, FileMode.Create);
+            await key.CopyToAsync(stream);
 
             return new KeyData
             {

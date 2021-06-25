@@ -1,17 +1,11 @@
-﻿using IdentityServer.LdapExtension;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using NLog;
 using SSHConfigurator.Options;
-using SSHConfigurator.Services; 
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using SSHConfigurator.Services;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 
 namespace SSHConfigurator.Installers
 {
@@ -27,7 +21,7 @@ namespace SSHConfigurator.Installers
             services.TryAddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             services.AddTransient<IRecaptchaService, GoogleRecaptchaService>();
-
+            
 
             // CONFIGURATIONS ---------------------------------------------------------------------------------------------------------
             // Configure the implementation for the public key storage depending on the OS.

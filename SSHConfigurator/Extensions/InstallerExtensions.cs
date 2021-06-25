@@ -16,7 +16,7 @@ namespace SSHConfigurator.Extensions
                 typeof(IInstaller).IsAssignableFrom(x) && !x.IsInterface &&
                 !x.IsAbstract).Select(Activator.CreateInstance).Cast<IInstaller>().ToList();
 
-            // call the installServices method on each class which inherits from IInstaller interface
+            // call the installServices method on each class that inherits from IInstaller interface
             installers.ForEach(installer => installer.InstallServices(services, configuration));
         }
     }

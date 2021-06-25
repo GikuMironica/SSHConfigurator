@@ -1,11 +1,11 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SSHConfigurator.Identity;
 using SSHConfigurator.Services;
 using SSHConfigurator.ViewModels;
-using System.Threading.Tasks;
 
 namespace SSHConfigurator.Controllers
 {
@@ -14,15 +14,15 @@ namespace SSHConfigurator.Controllers
     /// </summary>
     public class AccountController : Controller
     {
-        private readonly LdapSignInManager signInManager;
+        private readonly LdapSignInManager _signInManager;
         private readonly IRecaptchaService _recaptchaService;
-        private readonly string _notAllowedLoginMessage = "You must be enrolled in a specific course to access this platform";
-        private readonly string _invalidLoginMessage = "Invalid Login Attempt";
+        private const string NotAllowedLoginMessage = "You must be enrolled in a specific course to access this platform";
+        private const string InvalidLoginMessage = "Invalid Login Attempt";
 
         public AccountController(LdapSignInManager signInManager, IRecaptchaService recaptchaService)
         {
-            this.signInManager = signInManager;
-            this._recaptchaService = recaptchaService;
+            _signInManager = signInManager;
+            _recaptchaService = recaptchaService;
         }
 
 
@@ -34,7 +34,7 @@ namespace SSHConfigurator.Controllers
         public async Task<IActionResult> Login()
         {
             // clear the existing external cookie
-            await this.HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);           
+            await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);           
 
             return View();
         }
@@ -65,27 +65,26 @@ namespace SSHConfigurator.Controllers
                 return View(model);
             }
 
-            var result = await signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, false);
+            var result = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, model.RememberMe, false);
                                 
             if (result.Succeeded)
-            { 
+            {
                 // the following if-else block prevents Open-Redirect Attacks.
                 if (!string.IsNullOrEmpty(returnUrl))
                 {
                     return LocalRedirect(returnUrl);
                 }
-                else
-                {
-                    return RedirectToAction("Index", "home");
-                }
+
+                return RedirectToAction("Index", "home");
             }
-            else if (result.IsNotAllowed)
+
+            if (result.IsNotAllowed)
             {
-                ModelState.AddModelError(string.Empty, _notAllowedLoginMessage);
+                ModelState.AddModelError(string.Empty, NotAllowedLoginMessage);
                 return View(model);
             }
 
-            ModelState.AddModelError(string.Empty, _invalidLoginMessage);
+            ModelState.AddModelError(string.Empty, InvalidLoginMessage);
             return View(model);
         }
 
@@ -96,7 +95,7 @@ namespace SSHConfigurator.Controllers
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
-            await signInManager.SignOutAsync();
+            await _signInManager.SignOutAsync();
             return RedirectToAction("login", "account");
         }
     }

@@ -1,13 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using SSHConfigurator.Models;
 using SSHConfigurator.Options;
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,21 +16,21 @@ namespace SSHConfigurator.Identity
     /// </summary>
     public class LdapSignInManager : SignInManager<THUMember>
     {
-        private readonly IOptions<AllowedCourses> coursesOptions;
-        private readonly LdapUserManager ldapUserManager;
+        private readonly IOptions<AllowedCourses> _coursesOptions;
+        private readonly LdapUserManager _ldapUserManager;
 
         public LdapSignInManager(LdapUserManager ldapUserManager, IHttpContextAccessor contextAccessor, IUserClaimsPrincipalFactory<THUMember> claimsFactory,
             IOptions<IdentityOptions> optionsAccessor, ILogger<LdapSignInManager> logger, IAuthenticationSchemeProvider schemes, IUserConfirmation<THUMember> confirmation,
             IOptions<AllowedCourses> coursesOptions) 
             : base(ldapUserManager, contextAccessor, claimsFactory, optionsAccessor, logger, schemes, confirmation)
         {
-            this.coursesOptions = coursesOptions;
-            this.ldapUserManager = ldapUserManager;
+            this._coursesOptions = coursesOptions;
+            this._ldapUserManager = ldapUserManager;
         }
 
         public override async Task<SignInResult> PasswordSignInAsync(string userName, string password, bool rememberMe, bool lockOutOnFailure)
         {
-            var user = await ldapUserManager.FindByNameAsync(userName , password);
+            var user = await _ldapUserManager.FindByNameAsync(userName , password);
 
             if (user == null)
             {
@@ -41,17 +38,15 @@ namespace SSHConfigurator.Identity
             }
 
             var validUser = false;
-            if (coursesOptions.Value.CourseNames != null)
+            if (_coursesOptions.Value.CourseNames == null)
+                return await this.PasswordSignInAsync(user, password, rememberMe, lockOutOnFailure);
+            foreach (var course in _coursesOptions.Value.CourseNames.Where(course => user.MemberOf.FirstOrDefault(s => s.Contains(course)) != null))
             {
-                foreach (var course in coursesOptions.Value.CourseNames)
-                {
-                    if (user.MemberOf.FirstOrDefault(s => s.Contains(course)) != null)
-                        validUser = true;
-                }
-                if (!validUser)
-                {
-                    return SignInResult.NotAllowed;
-                }
+                validUser = true;
+            }
+            if (!validUser)
+            {
+                return SignInResult.NotAllowed;
             }
             return await this.PasswordSignInAsync(user, password, rememberMe, lockOutOnFailure);
         }

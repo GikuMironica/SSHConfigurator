@@ -2,11 +2,7 @@
 using Microsoft.Extensions.Options;
 using SSHConfigurator.Domain;
 using SSHConfigurator.Options;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SSHConfigurator.Services
@@ -16,13 +12,13 @@ namespace SSHConfigurator.Services
     /// </summary>
     public class LinuxKeyStorageService : IKeyStorageService
     {
-        private readonly KeyStorageScripts _ShellScripts;
+        private readonly KeyStorageScripts _shellScripts;
         private readonly SystemConfiguration _systemConfig;
         private readonly ILogger<LinuxKeyStorageService> _logger;
 
         public LinuxKeyStorageService(IOptions<KeyStorageScripts> scripts, IOptions<SystemConfiguration> systemConfig, ILogger<LinuxKeyStorageService> logger)
         {
-            _ShellScripts = scripts.Value;
+            _shellScripts = scripts.Value;
             _systemConfig = systemConfig.Value;
             _logger = logger;
         }
@@ -31,7 +27,7 @@ namespace SSHConfigurator.Services
         /// <summary>
         /// This method checks whether the user has already uploaded a public key.
         /// </summary>
-        public async Task<bool> HasKeyAsync(string Username)
+        public async Task<bool> HasKeyAsync(string username)
         {            
             var process = new Process()
             {
@@ -46,10 +42,10 @@ namespace SSHConfigurator.Services
                 }
             };
             process.Start();
-            await process.StandardInput.WriteLineAsync(string.Format(_ShellScripts.CheckUserAndKeyScript, Username));
+            await process.StandardInput.WriteLineAsync(string.Format(_shellScripts.CheckUserAndKeyScript, username));
             process.StandardInput.Close();
-            string output = await process.StandardOutput.ReadToEndAsync();
-            string error = await process.StandardError.ReadLineAsync();
+            var output = await process.StandardOutput.ReadToEndAsync();
+            var error = await process.StandardError.ReadLineAsync();
             process.WaitForExit();
             process.Close();
 
@@ -58,16 +54,13 @@ namespace SSHConfigurator.Services
                 _logger.LogError(error);
                 return false ; 
             }
-            if (output.Contains("0"))
-                return false;
-
-            return true;
+            return !output.Contains("0");
         }
 
         /// <summary>
         /// This method stores the public key in the appropriate location on the target machine.
         /// </summary>
-        public async Task<StoreKeyResult> StorePublicKeyAsync(string Keyname, string Username)
+        public async Task<StoreKeyResult> StorePublicKeyAsync(string keyname, string username)
         {
             var process = new Process()
             {
@@ -82,10 +75,10 @@ namespace SSHConfigurator.Services
                 }
             };
             process.Start();
-            await process.StandardInput.WriteLineAsync(string.Format(_ShellScripts.StoreKeyScript, Username, Keyname, _systemConfig.AdminUsername, _systemConfig.AccountLifeTime));
+            await process.StandardInput.WriteLineAsync(string.Format(_shellScripts.StoreKeyScript, username, keyname, _systemConfig.AdminUsername, _systemConfig.AccountLifeTime));
             process.StandardInput.Close();
-            string output = await process.StandardOutput.ReadLineAsync();
-            string error = await process.StandardError.ReadToEndAsync();
+            var output = await process.StandardOutput.ReadLineAsync();
+            var error = await process.StandardError.ReadToEndAsync();
             process.WaitForExit();
             process.Close();                               
 
@@ -94,18 +87,21 @@ namespace SSHConfigurator.Services
                 return new StoreKeyResult
                 {
                     IsSuccessful = false,
-                    ErrorMessage = error + "\n "+ string.Format(_ShellScripts.StoreKeyScript, Username, Keyname, _systemConfig.AdminUsername, _systemConfig.AccountLifeTime)
+                    ErrorMessage = error + "\n "+ string.Format(_shellScripts.StoreKeyScript, username, keyname, _systemConfig.AdminUsername, _systemConfig.AccountLifeTime)
                 };
             }
-            if (!string.IsNullOrEmpty(output))
-            {
-                if (output.Contains("0"))
-                    return new StoreKeyResult
-                    {
-                        IsSuccessful = false,
-                        ErrorMessage = "Something went wrong"
-                    };
-            }
+
+            if (string.IsNullOrEmpty(output))
+                return new StoreKeyResult
+                {
+                    IsSuccessful = true
+                };
+            if (output.Contains("0"))
+                return new StoreKeyResult
+                {
+                    IsSuccessful = false,
+                    ErrorMessage = "Something went wrong"
+                };
             return new StoreKeyResult
             {
                 IsSuccessful = true
@@ -116,7 +112,7 @@ namespace SSHConfigurator.Services
         /// <summary>
         /// This method deletes the user's public key from the target machine if exists.
         /// </summary>
-        public async Task DeletePublicKeyAsync(string Username)
+        public async Task DeletePublicKeyAsync(string username)
         {
             var process = new Process()
             {
@@ -131,7 +127,7 @@ namespace SSHConfigurator.Services
                 }
             };
             process.Start();
-            await process.StandardInput.WriteLineAsync(string.Format(_ShellScripts.DeleteKeyScript, Username));
+            await process.StandardInput.WriteLineAsync(string.Format(_shellScripts.DeleteKeyScript, username));
             process.StandardInput.Close();
             process.WaitForExit();
             process.Close();

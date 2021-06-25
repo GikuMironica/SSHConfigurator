@@ -18,7 +18,7 @@ namespace SSHConfigurator.Services
         /// <summary>
         /// This method deletes the user's public key from the target machine if exists.
         /// </summary>
-        public Task DeletePublicKeyAsync(string Username)
+        public Task DeletePublicKeyAsync(string username)
         {
             //return Task.CompletedTask;
             throw new NotImplementedException();
@@ -28,16 +28,16 @@ namespace SSHConfigurator.Services
         /// <summary>
         /// This method checks whether the user has already uploaded a public key.
         /// </summary>
-        public Task<bool> HasKeyAsync(string Username)
+        public Task<bool> HasKeyAsync(string username)
         {
             return Task.FromResult(false);
         }
-
+        
 
         /// <summary>
         /// This method stores the public key in the appropriate location on the target machine.
         /// </summary>
-        public Task<StoreKeyResult> StorePublicKeyAsync(string Keyname, string Username)
+        public Task<StoreKeyResult> StorePublicKeyAsync(string keyname, string username)
         {
             throw new NotImplementedException();
         }
